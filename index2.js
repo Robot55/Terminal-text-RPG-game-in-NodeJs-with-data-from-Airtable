@@ -334,8 +334,6 @@ function tickMainCharacter() {
 				} else { // if I missed monster
 					display(ch.name + " strikes at " + monster.name + " but misses...")
 				}
-				//check if the target was a monster and they dead
-				console.verbose("checking to see if "+monster.name+" is dead")
 
 			}
 
@@ -364,23 +362,28 @@ function tickMainCharacter() {
 
 
 			function priortize(character,opponent,action) {
+				var modifiedPriority = 0;
 				if(action=="sneak") {
 					modifiedPriority = roll.roll("d10").result
-					if (character.class="sneaker")  {
+					if (character.class=="sneaker")  {
 						modifiedPriority+=50;
 
 					}
-					modifiedPriority += character.wounds*40 || 0
+					modifiedPriority += character.wounds*15 || 0
+					modifiedPriority += character.AGI/10 || 0
+					modifiedPriority += (character.PER - opponent.PER) /10
+					
 					return modifiedPriority
 				}
 
 				if(action=="attack") {
 					modifiedPriority = roll.roll("d10").result
-					if(character.class="attacker") {
+					if(character.class=="attacker") {
 						modifiedPriority+=50;
 					}
 					modifiedPriority -= character.wounds*15 || 0
 					modifiedPriority += opponent.wounds*15 || 0
+					modifiedPriority += character.STR/10 || 0
 					return modifiedPriority
 				}
 				
@@ -394,13 +397,16 @@ function tickMainCharacter() {
 			var monsterActions = [];
 
 			for(var i in possibleAllActions) {
-				var action = possibleAllActions[i];
-				action.priority = priortize(ch,monster,action.name);
-				chActions.push(action)
+                var action = possibleAllActions[i];
+                action.priority = priortize(ch,monster,action.name);
+                chActions.push(action)
 
-				action.priority = priortize(monster,ch,action.name);
-				monsterActions.push(action)
-			}
+                var action2 = {}
+                action2.name = possibleAllActions[i].name;
+                action2.actionFunction = possibleAllActions[i].actionFunction
+                action2.priority = priortize(monster,ch,action.name);
+                monsterActions.push(action2)
+            }
 
 
 
@@ -447,8 +453,6 @@ function tickMainCharacter() {
 			if ( checkIfDead(monster)){ // if monster died
 				display (monster.name + " has died from " +monster.wounds + " wounds")
 				model.world[ch.currentRoom].Monster = false;
-				console.verbose(monster.name + "'s model was deleted form room")
-				
 			}  else {
 				console.verbose (monster.name + " is alive")
 			}
