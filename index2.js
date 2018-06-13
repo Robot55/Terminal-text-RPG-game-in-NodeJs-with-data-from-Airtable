@@ -205,10 +205,11 @@ function tickMainCharacter() {
 	var ch = model.playerCharacters[0];
 	
 	var currentRoom = model.world[ch.currentRoom];
-	
+	var rounds = model.rounds
 	// There is a monster in the room!
 	if(currentRoom.Monster) {
 	  var monster  = currentRoom.Monster;
+	  
 	  display(ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]);
 	  
 
@@ -216,13 +217,13 @@ function tickMainCharacter() {
 		console.verbose(ch)
 		console.verbose (monster)
 		
-		if (currentRoom.phase==undefined){
-			currentRoom.phase="surprise"
+		if (rounds==undefined){
+			model.rounds=0
 		}
-		display("The phase is", currentRoom.phase)
-		if (currentRoom.phase=="surprise"){
-			// caculate surprise
-			
+		
+		if (rounds==0){
+			display("<<<<<<<< ROUND: "+rounds+" >>>>>>>>")
+			// calculate surprise
 			function surpriseCheckRoll (someone, someoneElse){
 				someone.surpriseModifier=0
 				someoneElse.surpriseModifier=0
@@ -242,12 +243,11 @@ function tickMainCharacter() {
 					console.verbose("neither side managed to surprise the other")
 				}
 			}
-			
 			surpriseCheckRoll(ch, monster)
-
-			currentRoom.phase="combat"
-		} else if (currentRoom.phase=="combat"){
+			model.rounds++
 			
+		} else if (rounds>0){
+			display("<<<<<<<< ROUND: "+rounds+" >>>>>>>>")
 			// Declaring some functions for use in combat phase
 
 			function basicMeleeToHitRoll (attacker,defender){
@@ -322,8 +322,6 @@ function tickMainCharacter() {
 				}
 			}
 
-			// Actual Combat phase begins
-
 			function melee(attemptor,target) {
 				characterAttackRoll = basicMeleeToHitRoll(attemptor, target)
 				
@@ -340,7 +338,9 @@ function tickMainCharacter() {
 				//check if succeed
 				// if so do:
 				if (attemptor == ch){
+					//move to next room and set rounds to 0
 					ch.currentRoom+=1;
+					model.rounds=0
 				}
 				attemptor.surpriseModifier=10
 				display("sneaking")
@@ -366,7 +366,12 @@ function tickMainCharacter() {
 					modifiedPriority = roll.roll("d10").result
 					if (character.class=="sneaker")  {
 						modifiedPriority+=50;
-
+					}
+					if (rounds==0)  {
+						modifiedPriority+=50;
+					}
+					if (rounds>0)  {
+						modifiedPriority-=999;
 					}
 					modifiedPriority += character.wounds*15 || 0
 					modifiedPriority += character.AGI/10 || 0
@@ -380,9 +385,12 @@ function tickMainCharacter() {
 					if(character.class=="attacker") {
 						modifiedPriority+=50;
 					}
+					
+					
 					modifiedPriority -= character.wounds*15 || 0
 					modifiedPriority += opponent.wounds*15 || 0
 					modifiedPriority += character.STR/10 || 0
+					
 					return modifiedPriority
 				}
 				
@@ -443,6 +451,7 @@ function tickMainCharacter() {
 				ch.causeOfDeath = monster.name;
 				ch.placeOfDeath = model.world[ch.currentRoom].name;
 				ch.alive = false;
+				model.rounds=0
 			} else {
 				console.verbose (ch.name + " is alive")
 			}
@@ -454,6 +463,10 @@ function tickMainCharacter() {
 				model.world[ch.currentRoom].Monster = false;
 			}  else {
 				console.verbose (monster.name + " is alive")
+			}
+			
+			if(rounds!=undefined){
+				model.rounds++
 			}
 
 
@@ -469,10 +482,12 @@ function tickMainCharacter() {
 		// this is where you could get loot
 		// for now you just go right in to the next room
 		model.playerCharacters[0].currentRoom+=1;
+		model.rounds=0
 		
 		if(model.playerCharacters[0].currentRoom>=model.world.length) {
 			// you finished the dungeon!
 			clear();
+			model.rounds=undefined
 			display("You won the game! all monsters are dead");
 			display("Your history: ");
 			display(model.playerCharacters);
