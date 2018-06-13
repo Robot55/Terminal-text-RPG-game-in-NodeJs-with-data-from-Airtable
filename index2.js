@@ -395,10 +395,10 @@ function tickMainCharacter() {
 
 			for(var i in possibleAllActions) {
 				var action = possibleAllActions[i];
-				action.priority = priortize(ch,monster,action);
+				action.priority = priortize(ch,monster,action.name);
 				chActions.push(action)
 
-				action.priority = priortize(monster,ch,action);
+				action.priority = priortize(monster,ch,action.name);
 				monsterActions.push(action)
 			}
 
