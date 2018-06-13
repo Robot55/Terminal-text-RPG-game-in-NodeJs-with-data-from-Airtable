@@ -221,10 +221,14 @@ function startCharacterCreation(onFinished) {
 			ch.name = result.name;
 		
 			display("Assigning random attributes cause this is just a prototype atm");
-			ch.strength = roll.roll("2d3").result;
-			ch.speed = roll.roll("d3").result;
-			ch.willpower = roll.roll("d3").result;
-			ch.something = 3;
+			ch.STR = roll.roll("d100").result+9;
+			ch.PER = roll.roll("d100").result+9;
+			ch.END = roll.roll("d100").result+9;
+			ch.INT = roll.roll("d100").result+9;
+			ch.AGI = roll.roll("d100").result+9;
+			
+			ch.level = 1
+			display("Starting " + ch.name + " at level"+ch.level)
 		
 			onFinished(ch);
 		});
@@ -295,16 +299,104 @@ function tickMainCharacter() {
 		display("The phase is", currentRoom.phase)
 		if (currentRoom.phase=="surprise"){
 			// caculate surprise
-			ch.hasSurprise=true;
+			
+			function surpriseCheckRoll (someone, someoneElse){
+				someone.surpriseModifier=0
+				someoneElse.surpriseModifier=0
+				
+				someoneModifiedRoll = roll.roll("d100").result + someone.AGI - someoneElse.PER
+				someoneElseModifiedRoll = roll.roll("d100").result + someoneElse.AGI - someone.PER
+				
+				if (someoneModifiedRoll > someoneElseModifiedRoll){
+					display(someone.name + " managed to surprise the " +someoneElse.name)
+					someone.surpriseModifier=10;
+				} else if (someoneElseModifiedRoll > someoneModifiedRoll){
+					display(someone.name + " managed to surprise the " +someoneElse.name)
+					someoneElse.surpriseModifier=10;
+				} else {
+					console.verbose("neither side managed to surprise the other")
+				}
+			}
+			
+			surpriseCheckRoll(ch, monster)
+
 			currentRoom.phase="combat"
 		} else if (currentRoom.phase=="combat"){
 			
-			function basicAttackRoll (someone){
-				return surpriseModifier+wit
+			
+			function basicMeleeToHitRoll (attacker,defender){
+				console.verbose(attacker.name + " is attacking " + defender.name)
+				attackerModifiedRoll = roll.roll("d100").result + Math.max(attacker.STR, attacker.AGI, 10) + attacker.surpriseModifier;
+				defenderModifiedRoll = roll.roll("d100").result + defender.AGI;
+				
+				console.verbose("Natural attack bonus is: "+ Math.max(attacker.STR, attacker.AGI, 10).toString())
+				console.verbose("modified atk roll: " + attackerModifiedRoll)
+				console.verbose("modified def roll: " + defenderModifiedRoll)
+				
+				if (attackerModifiedRoll > defenderModifiedRoll){
+					return "hit"}
+				else return "miss"			
+				}
+			
+			function basicMeleeDamage (attacker, defender){
+				modifiedDamage = 1
+				attackerDamageRoll = roll.roll("d100").result + attacker.STR
+				defenderDamageRoll = roll.roll("d100").result + defender.END;
+				
+				if(attackerDamageRoll > defenderDamageRoll){
+					display ("attacker drives home the hit")
+					modifiedDamage++;
+				} else if (defenderDamageRoll > attackerDamageRoll){
+					modifiedDamage--;
+				}
+				
+				if (defender.wounds==undefined){
+					defender.wounds=(modifiedDamage || 1)
+				} else {
+					defender.wounds = defender.wounds + modifiedDamage
+				}
 			}
 			
-			basicCharacterAttack = basicAttackRoll(ch)
-			basicMobAttack = basicAttackRoll(monster)
+			function checkIfDead (someone){
+				if (someone.wounds>=3){
+					return true
+				} else {
+					return false
+				}
+			}
+			// character attacks monster
+			characterAttackRoll = basicMeleeToHitRoll(ch, monster)
+			monsterAttackRoll = basicMeleeToHitRoll(monster, ch)
+			
+			if (characterAttackRoll=="hit"){
+				display(ch.name + " hits " + monster.name)
+				basicMeleeDamage (ch, monster)
+			} else {
+				display(ch.name + " strikes at " + monster.name + " but misses...")
+			}
+			//check if monster dead
+			if (checkIfDead(monster)){
+				display(monster.name + " has died")
+				delete model.world[ch.currentRoom].Monster;
+				
+			} else { //if not dead monster attacks
+				if (monsterAttackRoll=="hit"){
+					display(monster.name + " hits " + ch.name)
+					basicMeleeDamage (monster, ch)
+				} else {
+					display (monster.name + " strikes at " + ch.name + " but misses...")
+				}
+			
+			}
+			
+			if (checkIfDead(ch)){
+				display(ch.name + " has died")
+				model.world[ch.currentRoom].tombstone = ch;
+				ch.causeOfDeath = monster.name;
+				ch.placeOfDeath = model.world[ch.currentRoom].name;
+				ch.alive = false;
+			}
+			
 		}
 				
 		
@@ -395,7 +487,7 @@ function mainCreateCharacterDieLoop() {
 		
 		display("They join the long list of heroes who sacrificed their lives:")
 		for(var i in model.playerCharacters) {
-		  var pcLevel = model.playerCharacters[i].strength;
+		  var pcLevel = model.playerCharacters[i].level;
 			display(model.playerCharacters[i].name+"\t\t\t who died at level \t"+pcLevel+"\tbecause of a  \t"+model.playerCharacters[i].causeOfDeath);
 		}
 		

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node index2.js verbose",
-    "play": "node index.js"
+    "play": "node index2.js"
   },
   "author": "",
   "license": "ISC",
