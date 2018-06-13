@@ -324,15 +324,14 @@ function tickMainCharacter() {
 
 			// Actual Combat phase begins
 
-			function melee(ch,monster) {
-				characterAttackRoll = basicMeleeToHitRoll(ch, monster)
+			function melee(attemptor,target) {
+				characterAttackRoll = basicMeleeToHitRoll(attemptor, target)
 				
-
-				if (characterAttackRoll=="hit"){ // if I managed to hit monster
-					display(ch.name + " hits " + monster.name)
-					basicMeleeDamage (ch, monster)
-				} else { // if I missed monster
-					display(ch.name + " strikes at " + monster.name + " but misses...")
+				if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
+					display(attemptor.name + " hits " + target.name)
+					basicMeleeDamage (attemptor, target)
+				} else { // if attemptor missed target
+					display(attemptor.name + " strikes at " + target.name + " but misses...")
 				}
 
 			}
