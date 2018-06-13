@@ -228,7 +228,7 @@ function startCharacterCreation(onFinished) {
 			ch.AGI = roll.roll("d100").result+9;
 			
 			ch.level = 1
-			display("Starting " + ch.name + " at level"+ch.level)
+			display("Starting " + ch.name + " at level "+ch.level)
 		
 			onFinished(ch);
 		});
@@ -306,11 +306,13 @@ function tickMainCharacter() {
 				
 				someoneModifiedRoll = roll.roll("d100").result + someone.AGI - someoneElse.PER
 				someoneElseModifiedRoll = roll.roll("d100").result + someoneElse.AGI - someone.PER
-				
-				if (someoneModifiedRoll > someoneElseModifiedRoll){
+				console.verbose(someone.name + " rolled " + someoneModifiedRoll + "for surprise")
+				console.verbose(someoneElse.name + " rolled " + someoneElseModifiedRoll + "for surprise")
+
+				if (someoneModifiedRoll > someoneElseModifiedRoll) {
 					display(someone.name + " managed to surprise the " +someoneElse.name)
 					someone.surpriseModifier=10;
-				} else if (someoneElseModifiedRoll > someoneModifiedRoll){
+				} else if (someoneElseModifiedRoll > someoneModifiedRoll) {
 					display(someone.name + " managed to surprise the " +someoneElse.name)
 					someoneElse.surpriseModifier=10;
 				} else {
@@ -323,7 +325,8 @@ function tickMainCharacter() {
 			currentRoom.phase="combat"
 		} else if (currentRoom.phase=="combat"){
 			
-			
+			// Declaring some functions for use in combat phase
+
 			function basicMeleeToHitRoll (attacker,defender){
 				console.verbose(attacker.name + " is attacking " + defender.name)
 				attackerModifiedRoll = roll.roll("d100").result + Math.max(attacker.STR, attacker.AGI, 10) + attacker.surpriseModifier;
@@ -333,28 +336,59 @@ function tickMainCharacter() {
 				console.verbose("modified atk roll: " + attackerModifiedRoll)
 				console.verbose("modified def roll: " + defenderModifiedRoll)
 				
-				if (attackerModifiedRoll > defenderModifiedRoll){
-					return "hit"}
-				else return "miss"			
+				if (attacker.surpriseModifier != 0)	{
+					attacker.surpriseModifier = 0
+					console.verbose (attacker.name + "'s surprise was used and will be set to 0 for remainder of battle")
 				}
+
+				if (attackerModifiedRoll > defenderModifiedRoll) {
+					return "hit"
+				} else {
+					return "miss"	
+				}
+
+
+				
+
+			}
 			
 			function basicMeleeDamage (attacker, defender){
 				modifiedDamage = 1
+				console.verbose ("modified damage starts at: " + modifiedDamage)
 				attackerDamageRoll = roll.roll("d100").result + attacker.STR
-				defenderDamageRoll = roll.roll("d100").result + defender.END;
-				
+				defenderDamageRoll = roll.roll("d100").result + defender.END
+
+				console.verbose(attacker.name + "'s STR modified roll is: " + attackerDamageRoll)
+				console.verbose(defender.name + "'s END modified roll is: " + defenderDamageRoll)
+
+
 				if(attackerDamageRoll > defenderDamageRoll){
-					display ("attacker drives home the hit")
+					display ("attacker drives home the hit (DMG)")
 					modifiedDamage++;
+					console.verbose ("modified damage boosted to: " + modifiedDamage)
+
 				} else if (defenderDamageRoll > attackerDamageRoll){
+					display ("Defender withstands the force of the blow (DMG RESIST)")
 					modifiedDamage--;
+					console.verbose ("modified damage nerfed to: " + modifiedDamage)
+
+				}
+				if (modifiedDamage > 0){
+
+
+					if (defender.wounds==undefined){
+						defender.wounds=modifiedDamage
+					} else {
+						defender.wounds = defender.wounds + modifiedDamage
+					}
+					display (defender.name + " winces in pain.")
+					console.verbose (defender.name + "is hit for: " + modifiedDamage)
+				} else { // if modified damage not larger than zero
+					display(defender.name + "shrugs off the blow")
+					console.verbose (defender.name + "is 'hit' for: " + modifiedDamage)
+
 				}
 				
-				if (defender.wounds==undefined){
-					defender.wounds=(modifiedDamage || 1)
-				} else {
-					defender.wounds = defender.wounds + modifiedDamage
-				}
 			}
 			
 			function checkIfDead (someone){
@@ -364,39 +398,51 @@ function tickMainCharacter() {
 					return false
 				}
 			}
-			// character attacks monster
+
+			// Actual Combat phase begins
+
+			// calculating both attack rolls for character and monster vs. each other
 			characterAttackRoll = basicMeleeToHitRoll(ch, monster)
 			monsterAttackRoll = basicMeleeToHitRoll(monster, ch)
 			
-			if (characterAttackRoll=="hit"){
+			// No inititiative yet so character always attacks first for now
+
+			if (characterAttackRoll=="hit"){ // if player managed to hit monster
 				display(ch.name + " hits " + monster.name)
 				basicMeleeDamage (ch, monster)
-			} else {
+			} else { // if player missed monster
 				display(ch.name + " strikes at " + monster.name + " but misses...")
 			}
 			//check if monster dead
-			if (checkIfDead(monster)){
-				display(monster.name + " has died")
-				delete model.world[ch.currentRoom].Monster;
+			console.verbose("checking to see if monster is dead")
+
+			if (checkIfDead(monster)){ // if monster died
+				display (monster.name + " has died from " +monster.wounds + " wounds")
+				model.world[ch.currentRoom].Monster = false;
+				console.verbose(monster.name + "'s model was deleted form room")
 				
-			} else { //if not dead monster attacks
-				if (monsterAttackRoll=="hit"){
+			} else { //monster is not dead
+				console.verbose(monster.name + "is alive")
+				if (monsterAttackRoll=="hit"){   //if monster hits player
 					display(monster.name + " hits " + ch.name)
 					basicMeleeDamage (monster, ch)
-				} else {
+				} else { // if monster misses
 					display (monster.name + " strikes at " + ch.name + " but misses...")
 				}
-			
 			}
 			
+			
+			console.verbose("checking to see if player is dead")
 			if (checkIfDead(ch)){
 				display(ch.name + " has died")
 				model.world[ch.currentRoom].tombstone = ch;
 				ch.causeOfDeath = monster.name;
 				ch.placeOfDeath = model.world[ch.currentRoom].name;
 				ch.alive = false;
+			} else {
+				console.verbose (ch.name + " is alive")
 			}
-			
+		// end of COMBAT PHASE	
 		}
 				
 		
