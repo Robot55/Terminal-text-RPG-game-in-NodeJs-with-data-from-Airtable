@@ -2,53 +2,6 @@ var newsleep = require('system-sleep');
 function sleep(x) {
     newsleep(x*1000)
 }
-/*
-prompt.get([{
-		name: 'username',
-		required: true
-	}, {
-		name: 'password',
-		required: true,
-		conform: function (value) {
-			console.log("passed validation")
-			return true;
-		}
-	}], function (err, result) {
-	//
-	// Log the results.
-	//
-	console.log('Command-line input received:');
-	console.log('  username: ' + result.username);
-	console.log('  password: ' + result.password);
-});
-*/
-
-
-// make a world with rooms, treasures, and monsters
-
-// create a character in interactive terminal
-
-// have the character traverse rooms
-// room - enter the room, pick the room card event (spawn monster)
-// initative check
-// whoever wins hits first
-// keep hitting in initiative order until someone dies
-//      hitting - everyone has one attack called basic, using primary attr
-//                if the char has a different attack (i.e. from loot)
-//                he gets that
-// if character dies - "Johan has died on the 3rd room"
-// if monster dies - "Johan has killed a monster in the 3rd room"
-// give johan a treasure card - treasure cards give xp which grant 2
-// points to prim attr, 1 to minor, 0 to opposite
-
-
-// Strength Speed Mind
-
-
-// load the rooms and monsters from airtable
-
-// log it to json
-
 
 console.verbose = function() {
   if(process.argv[2]=="verbose") {
@@ -256,42 +209,7 @@ function tickMainCharacter() {
 	  var monster  = currentRoom.Monster;
 	  display(ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]);
 	  
-/*	  
-		
-		// fight loop
-		
-		var playerRoll = roll.roll("d6");
-		var playerStrengthModified = ch.strength+playerRoll.result;
-		
-		if(currentRoom.tombstone) {
-		  playerStrengthModified+=parseInt(monster.strength/3);
-	  	display("The fallen corpse of "+currentRoom.tombstone.name+" in this place gives you extra strength!");
-	  }
-		
-		display(ch.name+" rolled "+playerRoll.result+" for a total strength of "+playerStrengthModified);
-		
-		
-		var monsterRoll = roll.roll("d6");
-		var monsterStrengthModified = monster.strength+monsterRoll.result;
-		display(monster.name+" rolled "+monsterRoll.result+" for a total strength of "+monsterStrengthModified);
-		
-		
-		
-		if(playerStrengthModified > monsterStrengthModified) {
-			display(ch.name +" has overcome the "+monster.name+" in room #"+ch.currentRoom+"!");
-			var xpRoll = {result:1}; //roll.roll('d3');
-			display(ch.name +" gains "+xpRoll.result+" Strength!");
-			ch.strength+=xpRoll.result;
-			delete model.world[ch.currentRoom].Monster;
-			
-		} else {
-			display(ch.name+" has fallen to the "+monster.name+"'s blade!");
-			model.world[ch.currentRoom].tombstone = ch;
-			ch.causeOfDeath = monster.name;
-			ch.placeOfDeath = model.world[ch.currentRoom].name;
-			ch.alive = false;
-		}
-		*/
+
 		console.verbose("start of Dave's place")
 		console.verbose(ch)
 		console.verbose (monster)
@@ -439,7 +357,7 @@ function tickMainCharacter() {
 			function priortize(character,opponent,action) {
 				if(action=="sneak") {
 					modifiedPriority = roll.roll("d10").result
-					if (character.class="sneaker")
+					if (character.class="sneaker")  {
 						modifiedPriority+=50;
 
 					}
