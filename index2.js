@@ -15,9 +15,9 @@ display = function(){
 	console.log.apply(null,arguments);
 	var guessTime = parseInt(arguments[0].toString().length/25,10)
 	if(guessTime > 1) {
-		sleep( guessTime);
+	//	sleep( guessTime);
 	} else {
-		sleep(1);
+	//	sleep(1);
 	}
 	
 }
@@ -212,7 +212,7 @@ function tickMainCharacter() {
 	  display(ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]);
 	  
 
-		console.verbose("start of Dave's place")
+		//console.verbose("start of Dave's place")
 		console.verbose(ch)
 		console.verbose (monster)
 		
@@ -305,10 +305,10 @@ function tickMainCharacter() {
 						defender.wounds = defender.wounds + modifiedDamage
 					}
 					display (defender.name + " winces in pain.")
-					console.verbose (defender.name + "is hit for: " + modifiedDamage)
+					console.verbose (defender.name + " is hit for: " + modifiedDamage)
 				} else { // if modified damage not larger than zero
-					display(defender.name + "shrugs off the blow")
-					console.verbose (defender.name + "is 'hit' for: " + modifiedDamage)
+					display(defender.name + " shrugs off the blow")
+					console.verbose (defender.name + " is 'hit' for: " + modifiedDamage)
 
 				}
 				
@@ -339,8 +339,15 @@ function tickMainCharacter() {
 
 			}
 
-			function sneak() {
+			function sneak(attemptor,target) {
+				//check if succeed
+				// if so do:
+				if (attemptor == ch){
+					ch.currentRoom+=1;
+				}
+				attemptor.surpriseModifier=10
 				display("sneaking")
+				
 			}
 
 			var possibleAllActions = [
@@ -363,7 +370,7 @@ function tickMainCharacter() {
 						modifiedPriority+=50;
 
 					}
-					modifiedPriority += character.wounds*15 || 0
+					modifiedPriority += character.wounds*40 || 0
 					return modifiedPriority
 				}
 
@@ -415,8 +422,13 @@ function tickMainCharacter() {
 
 			display("--------"+monsterActions[0]["name"]+"----------")
 
-			monsterActions[0]["actionFunction"](monster,ch);
-			
+			if(currentRoom.monster) monsterActions[0]["actionFunction"](monster,ch);
+			sleep(3)
+            console.verbose(chActions)
+            console.verbose(monsterActions)
+            sleep(3)
+
+
 			
 			
 			console.verbose("checking to see if player is dead")
@@ -437,14 +449,16 @@ function tickMainCharacter() {
 				model.world[ch.currentRoom].Monster = false;
 				console.verbose(monster.name + "'s model was deleted form room")
 				
-			} 
+			}  else {
+				console.verbose (monster.name + " is alive")
+			}
 
 
 		// end of COMBAT PHASE	
 		}
 				
 		
-		console.verbose("End of Dave's place")
+		//console.verbose("End of Dave's place")
 		model.playerCharacters[0] = ch;
 		console.verbose(model.playerCharacters[0]);
 	} else {
@@ -521,7 +535,7 @@ function mainCreateCharacterDieLoop() {
 		model.playerCharacters[0].currentRoom = 0;
 	
 		while(isMainCharacterAlive()) {
-			console.verbose("Playing frame #"+model.framesTicked);
+			console.verbose("========== Playing frame #"+model.framesTicked);
 			display("...");
 			tickMainCharacter();
 			sleep(1);
