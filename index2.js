@@ -76,8 +76,7 @@ var Roll = require('roll'),
 clear();
 //
 // Start the prompt
-//
-prompt.start();
+
 
 //
 // Get two properties from the user: username and password
@@ -86,20 +85,24 @@ prompt.start();
 
 // message string, propRequest string array, validatelogic precdicate, successCallback function
 function requestFromUser(message,propRequest,validateLogic,successCallback) {
-	console.log(message);
+	display(message);
+	//
+	var prompt = require('prompt');
+	prompt.start();
 	prompt.get(propRequest, function (err, result) {
 		//
 		// Log the results.
 		//
 		console.verbose("You said:");
 		console.verbose(result);
-		if(validateLogic(result)) {
+		if(validateLogic(result) || validateLogic==true) {
 		  console.verbose("It passed validation");
-			return successCallback(result);
+			 return successCallback(result);
 		} else {
 			display("Did not validate! Try again:");
-			return requestFromUser(message,propRequest,validateLogic,successCallback);
+			 return requestFromUser(message,propRequest,validateLogic,successCallback);
 		}
+		prompt.stop();
 	});
 }
 
@@ -215,7 +218,7 @@ function startCharacterCreation(onFinished) {
 	
 	
 	
-		requestFromUser("Name?",['name'],function(result){
+		return requestFromUser("Name?",['name'],function(result){
 			return result.name!="";
 		},function(result){
 			ch.name = result.name;
@@ -230,7 +233,7 @@ function startCharacterCreation(onFinished) {
 			ch.level = 1
 			display("Starting " + ch.name + " at level "+ch.level)
 		
-			onFinished(ch);
+			return onFinished(ch);
 		});
 	
 	
@@ -401,35 +404,99 @@ function tickMainCharacter() {
 
 			// Actual Combat phase begins
 
-			// calculating both attack rolls for character and monster vs. each other
-			characterAttackRoll = basicMeleeToHitRoll(ch, monster)
-			monsterAttackRoll = basicMeleeToHitRoll(monster, ch)
-			
-			// No inititiative yet so character always attacks first for now
-
-			if (characterAttackRoll=="hit"){ // if player managed to hit monster
-				display(ch.name + " hits " + monster.name)
-				basicMeleeDamage (ch, monster)
-			} else { // if player missed monster
-				display(ch.name + " strikes at " + monster.name + " but misses...")
-			}
-			//check if monster dead
-			console.verbose("checking to see if monster is dead")
-
-			if (checkIfDead(monster)){ // if monster died
-				display (monster.name + " has died from " +monster.wounds + " wounds")
-				model.world[ch.currentRoom].Monster = false;
-				console.verbose(monster.name + "'s model was deleted form room")
+			function melee(ch,monster) {
+				characterAttackRoll = basicMeleeToHitRoll(ch, monster)
 				
-			} else { //monster is not dead
-				console.verbose(monster.name + "is alive")
-				if (monsterAttackRoll=="hit"){   //if monster hits player
-					display(monster.name + " hits " + ch.name)
-					basicMeleeDamage (monster, ch)
-				} else { // if monster misses
-					display (monster.name + " strikes at " + ch.name + " but misses...")
+
+				if (characterAttackRoll=="hit"){ // if I managed to hit monster
+					display(ch.name + " hits " + monster.name)
+					basicMeleeDamage (ch, monster)
+				} else { // if I missed monster
+					display(ch.name + " strikes at " + monster.name + " but misses...")
 				}
+				//check if the target was a monster and they dead
+				console.verbose("checking to see if "+monster.name+" is dead")
+
 			}
+
+			function sneak() {
+				display("sneaking")
+			}
+
+			var possibleAllActions = [
+				{
+					"name":"attack",
+					"actionFunction" : melee
+				},
+				{
+					"name":"sneak",
+					"actionFunction" : sneak
+				}
+			]
+
+
+
+			function priortize(character,opponent,action) {
+				if(action=="sneak") {
+					modifiedPriority = roll.roll("d10").result
+					if (character.class="sneaker")
+						modifiedPriority+=50;
+
+					}
+					modifiedPriority += character.wounds*15 || 0
+					return modifiedPriority
+				}
+
+				if(action=="attack") {
+					modifiedPriority = roll.roll("d10").result
+					if(character.class="attacker") {
+						modifiedPriority+=50;
+					}
+					modifiedPriority -= character.wounds*15 || 0
+					modifiedPriority += opponent.wounds*15 || 0
+					return modifiedPriority
+				}
+				
+			}
+
+
+            /* dave STOP! go no further. You shall not pass. */
+
+
+			var chActions = [];
+			var monsterActions = [];
+
+			for(var i in possibleAllActions) {
+				var action = possibleAllActions[i];
+				action.priority = priortize(ch,monster,action);
+				chActions.push(action)
+
+				action.priority = priortize(monster,ch,action);
+				monsterActions.push(action)
+			}
+
+
+
+			// go over every possible attack
+			// figure out the priority of each one
+
+            // pick highest prio:
+			chActions = chActions.sort(function(a,b){
+				return b.priority-a.priority;
+			})
+
+			display("--------"+chActions[0]["name"]+"----------")
+
+			chActions[0]["actionFunction"](ch,monster);
+
+			monsterActions = monsterActions.sort(function(a,b){
+				return b.priority-a.priority;
+			})
+
+			display("--------"+monsterActions[0]["name"]+"----------")
+
+			monsterActions[0]["actionFunction"](monster,ch);
+			
 			
 			
 			console.verbose("checking to see if player is dead")
@@ -442,6 +509,17 @@ function tickMainCharacter() {
 			} else {
 				console.verbose (ch.name + " is alive")
 			}
+
+			console.verbose("checking to see if monster is dead")
+
+			if ( checkIfDead(monster)){ // if monster died
+				display (monster.name + " has died from " +monster.wounds + " wounds")
+				model.world[ch.currentRoom].Monster = false;
+				console.verbose(monster.name + "'s model was deleted form room")
+				
+			} 
+
+
 		// end of COMBAT PHASE	
 		}
 				
