@@ -3,6 +3,8 @@ function sleep(x) {
     newsleep(x*1000)
 }
 
+var colors = require('colors/safe');
+
 console.verbose = function() {
   if(process.argv[2]=="verbose") {
   	console.log.apply(null,arguments);
