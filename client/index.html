@@ -18,20 +18,15 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler55" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation"> 
                 <span class="navbar-toggler-icon"></span> 
             </button>             
-
             <div class="collapse navbar-collapse" id="navbarToggler55"> 
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0"> 
-                    <li class="nav-item active">                          
+                    <li class="nav-item active"> 
 </li>                     
-
-                    <li class="nav-item">                          
+                    <li class="nav-item"> 
 </li>                     
-
-                    <li class="nav-item">                          
+                    <li class="nav-item"> 
 </li>                     
-
-                    <li class="nav-item dropdown">                          
-
+                    <li class="nav-item dropdown"> 
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"> 
                             <a class="dropdown-item" href="#">Action</a> 
                             <a class="dropdown-item" href="#">Another action</a> 
@@ -39,35 +34,32 @@
                         </div>                         
                     </li>                     
                 </ul>                 
-
                 <form class="form-inline my-2 my-lg-0">
-                    <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="restart">Restart</button>                                                               
+                    <button class="btn btn-outline-danger my-2 my-sm-0" type="submit" id="restart">Restart</button>                     
                 </form>                 
             </div>             
         </nav>
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <textarea class="form-control" rows="25" id="console"></textarea>
-                    <form role="form" id="terminalForm">
-                        <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-                            <div class="input-group" style="width:100%">
-                                <input type="text" class="form-control" placeholder="" id="terminal">
-                                <div class="btn-group mr-2" role="group" aria-label="First group">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </div>
-                            </div>
-                        </div>                         
-                    </form>                     
+                    <pre class="form-control" style="height: calc(100vh - 160px)" id="console"></pre>
+                    <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+                        <input type="text" class="form-control" placeholder="" id="terminal" style="width:calc(100% - 90px)">
+                        <button id="submit" class="btn btn-primary" style="Width:90px">Submit</button>
+                    </div>                     
                 </div>
+                <div class="col-md-10"> 
+</div>                 
+                <div class="col-md-1"> 
+</div>
             </div>
-            <div class="row"></div>
         </div>
         <!-- Bootstrap core JavaScript
     ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/js/popper.js"></script>
+        <script src="gamelogic.js"></script>
         <script src="bootstrap/js/bootstrap.min.js"></script>
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         <script src="assets/js/ie10-viewport-bug-workaround.js"></script>

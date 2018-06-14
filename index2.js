@@ -1,14 +1,14 @@
-var newsleep = require('system-sleep');
 function sleep(x) {
-    newsleep(x*1000)
+    return;
 }
 
-var colors = require('colors/safe');
 
 console.verbose = function() {
-  if(process.argv[2]=="verbose") {
+  
   	console.log.apply(null,arguments);
-  }
+  
+  
+  
 }
 
 display = function(){
@@ -19,16 +19,20 @@ display = function(){
 	} else {
 	//	sleep(1);
 	}
+	for(var i in arguments) {
+		$("#console").append("<div>"+JSON.stringify(arguments[i])+"</div>");
+	}
+	
 	
 }
 
 
-var prompt = require('prompt');
 //var sleep = require('sleep').sleep;
 var Roll = require('roll'),
   roll = new Roll();
- var clear = require('clear');
-clear();
+ var clear = function() {
+	 
+ }
 //
 // Start the prompt
 
@@ -40,25 +44,12 @@ clear();
 
 // message string, propRequest string array, validatelogic precdicate, successCallback function
 function requestFromUser(message,propRequest,validateLogic,successCallback) {
-	display(message);
-	//
-	var prompt = require('prompt');
-	prompt.start();
-	prompt.get(propRequest, function (err, result) {
-		//
-		// Log the results.
-		//
-		console.verbose("You said:");
-		console.verbose(result);
-		if(validateLogic(result) || validateLogic==true) {
-		  console.verbose("It passed validation");
-			 return successCallback(result);
-		} else {
-			display("Did not validate! Try again:");
-			 return requestFromUser(message,propRequest,validateLogic,successCallback);
-		}
-		prompt.stop();
-	});
+	var val = prompt(message);
+	var key = propRequest[0];
+	var payload = {  } 
+	payload[key]= val;
+	alert(JSON.stringify(payload))
+	return successCallback(payload)
 }
 
 //requestFromUser("Welcome to HeroMaker!");
@@ -504,7 +495,6 @@ function tickMainCharacter() {
 			display("You won the game! all monsters are dead");
 			display("Your history: ");
 			display(model.playerCharacters);
-			prcoess.exit();
 		}
 		
 	}
@@ -526,6 +516,8 @@ function tickMainCharacter() {
 // Initialization
 
 var model = {};
+
+$(document).ready(function (){
 
 loadEntireBaseIntoAirtableData("Rooms",function(){
 	loadEntireBaseIntoAirtableData("Monsters",function(){
@@ -555,7 +547,7 @@ loadEntireBaseIntoAirtableData("Rooms",function(){
 	})
 })
 
-
+})
 // the game's main loop is from char creation to death and then create another char
 
 function mainCreateCharacterDieLoop() {
@@ -588,3 +580,7 @@ function mainCreateCharacterDieLoop() {
 	  return mainCreateCharacterDieLoop();
 	})
 }
+
+
+	
+	
