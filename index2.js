@@ -210,7 +210,20 @@ function tickMainCharacter() {
 	if(currentRoom.Monster) {
 	  var monster  = currentRoom.Monster;
 	  
-	  display(ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]);
+	  // Display contextual message each tick (changes if beginning, middle or end of encounter
+
+	  function displayEveryTickMessage (){
+	  	var messageString = new String("");
+	  	if (rounds == 0 || rounds == undefined){
+	  		messageString +="NEW ROOM: " + ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]
+	  	} else {
+	  		messageString += ch.name +" is engaging "+monster.name+" in "+currentRoom["Room Description"]	  		
+	  	}
+	  	return messageString
+	  }
+	  contextualText = displayEveryTickMessage()
+	  display (contextualText)
+	  //display(ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]);
 	  
 
 		//console.verbose("start of Dave's place")
@@ -291,7 +304,7 @@ function tickMainCharacter() {
 					console.verbose ("modified damage boosted to: " + modifiedDamage)
 
 				} else if (defenderDamageRoll > attackerDamageRoll){
-					display ("Defender withstands the force of the blow (DMG RESIST)")
+					display (defender.name + " withstands the force of the blow (DMG RESIST)")
 					modifiedDamage--;
 					console.verbose ("modified damage nerfed to: " + modifiedDamage)
 
