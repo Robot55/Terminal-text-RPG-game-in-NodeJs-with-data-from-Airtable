@@ -235,7 +235,9 @@ function tickMainCharacter() {
 		}
 		
 		if (rounds==0){
+			display("")
 			display("<<<<<<<< ROUND: "+rounds+" >>>>>>>>")
+
 			// calculate surprise
 			function surpriseCheckRoll (someone, someoneElse){
 				someone.surpriseModifier=0
@@ -243,16 +245,21 @@ function tickMainCharacter() {
 				
 				someoneModifiedRoll = roll.roll("d100").result + someone.AGI - someoneElse.PER
 				someoneElseModifiedRoll = roll.roll("d100").result + someoneElse.AGI - someone.PER
+				console.verbose("")
+				console.verbose("??? Checking for Surprise ???")
 				console.verbose(someone.name + " rolled " + someoneModifiedRoll + "for surprise")
 				console.verbose(someoneElse.name + " rolled " + someoneElseModifiedRoll + "for surprise")
 
 				if (someoneModifiedRoll > someoneElseModifiedRoll) {
+					display("")
 					display(someone.name + " managed to surprise the " +someoneElse.name)
 					someone.surpriseModifier=10;
 				} else if (someoneElseModifiedRoll > someoneModifiedRoll) {
+					display("")
 					display(someone.name + " managed to surprise the " +someoneElse.name)
 					someoneElse.surpriseModifier=10;
 				} else {
+					console.verbose("")
 					console.verbose("neither side managed to surprise the other")
 				}
 			}
@@ -260,21 +267,23 @@ function tickMainCharacter() {
 			model.rounds++
 			
 		} else if (rounds>0){
+			display("")
 			display("<<<<<<<< ROUND: "+rounds+" >>>>>>>>")
 			// Declaring some functions for use in combat phase
 
 			function basicMeleeToHitRoll (attacker,defender){
+				console.verbose("")
 				console.verbose(attacker.name + " is attacking " + defender.name)
 				attackerModifiedRoll = roll.roll("d100").result + Math.max(attacker.STR, attacker.AGI, 10) + attacker.surpriseModifier;
 				defenderModifiedRoll = roll.roll("d100").result + defender.AGI;
 				
-				console.verbose("Natural attack bonus is: "+ Math.max(attacker.STR, attacker.AGI, 10).toString())
-				console.verbose("modified atk roll: " + attackerModifiedRoll)
-				console.verbose("modified def roll: " + defenderModifiedRoll)
+				console.verbose(">>> "+attacker.name+"'s NATURAL attack bonus is: "+ Math.max(attacker.STR, attacker.AGI, 10).toString())
+				console.verbose(">>> "+attacker.name+"'s modified ATTACK roll: " + attackerModifiedRoll)
+				console.verbose("<<< "+defender.name+"'s modified DeFENSE roll: " + defenderModifiedRoll)
 				
 				if (attacker.surpriseModifier != 0)	{
 					attacker.surpriseModifier = 0
-					console.verbose (attacker.name + "'s surprise was used and will be set to 0 for remainder of battle")
+					console.verbose (attacker.name + "'s surprise modifier was used and will be set to 0 now")
 				}
 
 				if (attackerModifiedRoll > defenderModifiedRoll) {
@@ -290,6 +299,7 @@ function tickMainCharacter() {
 			
 			function basicMeleeDamage (attacker, defender){
 				modifiedDamage = 1
+				console.verbose("")
 				console.verbose ("modified damage starts at: " + modifiedDamage)
 				attackerDamageRoll = roll.roll("d100").result + attacker.STR
 				defenderDamageRoll = roll.roll("d100").result + defender.END
@@ -298,12 +308,14 @@ function tickMainCharacter() {
 				console.verbose(defender.name + "'s END modified roll is: " + defenderDamageRoll)
 
 
-				if(attackerDamageRoll > defenderDamageRoll){
-					display ("attacker drives home the hit (DMG)")
+				if((attackerDamageRoll - defenderDamageRoll) > 10){
+					display("")
+					display (attacker.name + "strikes a critical blow")
 					modifiedDamage++;
 					console.verbose ("modified damage boosted to: " + modifiedDamage)
 
-				} else if (defenderDamageRoll > attackerDamageRoll){
+				} else if ((defenderDamageRoll - attackerDamageRoll) >10){
+					display("")
 					display (defender.name + " withstands the force of the blow (DMG RESIST)")
 					modifiedDamage--;
 					console.verbose ("modified damage nerfed to: " + modifiedDamage)
@@ -317,11 +329,19 @@ function tickMainCharacter() {
 					} else {
 						defender.wounds = defender.wounds + modifiedDamage
 					}
-					display (defender.name + " winces in pain.")
-					console.verbose (defender.name + " is hit for: " + modifiedDamage)
+				display("")
+				display("xXx")
+				display (defender.name + " winces in pain.")
+				console.verbose (defender.name + " is hit for: " + modifiedDamage)
+				display("xXx")
+					
 				} else { // if modified damage not larger than zero
+					display("")
+					display("xXx")
 					display(defender.name + " shrugs off the blow")
 					console.verbose (defender.name + " is 'hit' for: " + modifiedDamage)
+					display("xXx")
+					
 
 				}
 				
@@ -339,9 +359,11 @@ function tickMainCharacter() {
 				characterAttackRoll = basicMeleeToHitRoll(attemptor, target)
 				
 				if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
+					display("")
 					display(attemptor.name + " hits " + target.name)
 					basicMeleeDamage (attemptor, target)
 				} else { // if attemptor missed target
+					display("")
 					display(attemptor.name + " strikes at " + target.name + " but misses...")
 				}
 
@@ -356,6 +378,7 @@ function tickMainCharacter() {
 					model.rounds=0
 				}
 				attemptor.surpriseModifier=10
+				display("")
 				display("sneaking")
 				
 			}
@@ -437,20 +460,26 @@ function tickMainCharacter() {
 			chActions = chActions.sort(function(a,b){
 				return b.priority-a.priority;
 			})
-
-			display("--------"+chActions[0]["name"]+"----------")
+			display("")
+			display("--------")
+			display(ch.name +"'s ACTION: "+chActions[0]["name"])
+			display("--------")
 
 			chActions[0]["actionFunction"](ch,monster);
 
 			monsterActions = monsterActions.sort(function(a,b){
 				return b.priority-a.priority;
 			})
-
-			display("--------"+monsterActions[0]["name"]+"----------")
+			display("")
+			display("--------")
+			display(monster.name +"'s ACTION: "+monsterActions[0]["name"])
+			display("--------")
 
 			if(currentRoom.monster) monsterActions[0]["actionFunction"](monster,ch);
 			sleep(3)
+			console.verbose("    ##### "+ch.name+"'s Priorities #####")
             console.verbose(chActions)
+			console.verbose("    ##### "+monster.name+"'s Priorities #####")
             console.verbose(monsterActions)
             sleep(3)
 
@@ -459,22 +488,31 @@ function tickMainCharacter() {
 			
 			console.verbose("checking to see if player is dead")
 			if (checkIfDead(ch)){
+				display("")
+				display("xXx")
 				display(ch.name + " has died")
+				display("xXx")
 				model.world[ch.currentRoom].tombstone = ch;
 				ch.causeOfDeath = monster.name;
 				ch.placeOfDeath = model.world[ch.currentRoom].name;
 				ch.alive = false;
 				model.rounds=0
 			} else {
+				console.verbose("")
 				console.verbose (ch.name + " is alive")
 			}
 
 			console.verbose("checking to see if monster is dead")
 
 			if ( checkIfDead(monster)){ // if monster died
+				display("")
+				display("xXx")
 				display (monster.name + " has died from " +monster.wounds + " wounds")
+				display("xXx")
+				sleep(1)
 				model.world[ch.currentRoom].Monster = false;
 			}  else {
+				console.verbose("")
 				console.verbose (monster.name + " is alive")
 			}
 			
@@ -501,9 +539,14 @@ function tickMainCharacter() {
 			// you finished the dungeon!
 			clear();
 			model.rounds=undefined
-			display("You won the game! all monsters are dead");
+			display("")
+			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			display("$ You won the game! all monsters are dead! $");
+			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			display("")
 			display("Your history: ");
 			display(model.playerCharacters);
+			sleep(3)
 			prcoess.exit();
 		}
 		
@@ -566,8 +609,13 @@ function mainCreateCharacterDieLoop() {
 		model.playerCharacters[0].currentRoom = 0;
 	
 		while(isMainCharacterAlive()) {
-			console.verbose("========== Playing frame #"+model.framesTicked);
+			console.verbose("")
+			console.verbose("==========")
+			console.verbose(" Playing tick frame #"+model.framesTicked);
+			console.verbose("==========")
+			display("");
 			display("...");
+			display("");
 			tickMainCharacter();
 			sleep(1);
 		}
