@@ -165,7 +165,7 @@ display("Loading data ... ");
 
 function startCharacterCreation(onFinished) {
   display("Create your character!");
-  
+  // Character Creation
   var ch = {
 		name: "Benjy "+roll.roll("2d6").result,
 		alive: true
@@ -184,7 +184,14 @@ function startCharacterCreation(onFinished) {
 			ch.END = roll.roll("d100").result+9;
 			ch.INT = roll.roll("d100").result+9;
 			ch.AGI = roll.roll("d100").result+9;
+			//Introducing mana to chars with over 50 INT
+			ch.mana = ch.INT > 50 ? Math.floor((ch.INT -40)/10) + roll.roll("d2").result-1 : 0
+			display (ch.name + "starting Mana: "+ch.mana)
 			
+			// for class/archetype generation.
+			//ch.archetype = roll.roll("d3").result
+			//ch.archetype = ch.archetype ==1 ? "fighter" : ch.archetype==2 ? "mage" : "thief"
+			display(ch.name +" is a " + ch.archetype)
 			ch.level = 1
 			display("Starting " + ch.name + " at level "+ch.level)
 		
@@ -210,6 +217,12 @@ function tickMainCharacter() {
 	if(currentRoom.Monster) {
 	  var monster  = currentRoom.Monster;
 	  
+	  // if monster has undefined mana - randomize some mana
+	  if (monster.mana == undefined){
+		  monster.mana = monster.INT > 50 ? Math.floor((monster.INT -40)/10) + roll.roll("d2").result-1 : 0
+		  console.verbose("")
+		  console.verbose(monster.name + " Mana set to: "+monster.mana)
+	  }
 	  // Display contextual message each tick (changes if beginning, middle or end of encounter
 
 	  function displayEveryTickMessage (){
