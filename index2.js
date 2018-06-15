@@ -243,6 +243,7 @@ function tickMainCharacter() {
 		console.verbose(ch)
 		console.verbose (monster)
 		
+		// Create Turn Based Time
 		if (rounds==undefined){
 			model.rounds=0
 		}
@@ -253,7 +254,7 @@ function tickMainCharacter() {
 			ch.disabled=0
 			monster.disabled=0
 
-			// calculate surprise
+			// Basic Surprise Roll
 			function surpriseCheckRoll (someone, someoneElse){
 				someone.surpriseModifier=0
 				someoneElse.surpriseModifier=0
@@ -284,7 +285,8 @@ function tickMainCharacter() {
 		} else if (rounds>0){
 			display("")
 			display("<<<<<<<< ROUND: "+rounds+" >>>>>>>>")
-			// Declaring some functions for use in combat phase
+			
+			// Basic Melee To Hit Roll
 
 			function basicMeleeToHitRoll (attacker,defender,meleeHandycap){
 				console.verbose("")
@@ -317,7 +319,7 @@ function tickMainCharacter() {
 				
 
 			}
-			
+			// basic Damage Roll
 			function basicMeleeDamage (attacker, defender, baseDamage){
 				modifiedDamage = baseDamage
 				console.verbose("")
@@ -376,7 +378,19 @@ function tickMainCharacter() {
 				}
 			}
 
-			function melee(attemptor,target) {
+// ================== All Possible Action Functions ================
+			
+			function doNothing(attemptor) {
+				//use this for when stunned, disabled, mesmerized, etc.
+				if (attemptor.disabled > 0){ // if char is doinf nothing because of disabled status
+					attemptor.disabled--; // reduce disabled status by 1 round
+				}
+				display("")
+				display(attemptor.name+" isn't doing anything...")
+				
+			}
+			
+			function melee(attemptor,target) { //use for basic melee attacks
 				characterAttackRoll = basicMeleeToHitRoll(attemptor, target,0)
 				
 				if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
@@ -390,7 +404,7 @@ function tickMainCharacter() {
 
 			}
 			
-			function wildAttack(attemptor,target) {
+			function wildAttack(attemptor,target) { // more likely to miss but more dmg
 				characterAttackRoll = basicMeleeToHitRoll(attemptor, target,25)
 				
 				if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
@@ -404,7 +418,8 @@ function tickMainCharacter() {
 
 			}
 
-			function sneak(attemptor,target) {
+			function sneak(attemptor,target) { 	// can be done on first round or when enemy disabled. 
+												//lets player go to next room or monster to disable player for 1 round
 				//check if succeed
 				// if so do:
 				if (attemptor == ch){
@@ -443,16 +458,10 @@ function tickMainCharacter() {
 				
 			}
 			
-			function doNothing(attemptor) {
-				//use this for when stunned, disabled, mesmerized, etc.
-				if (attemptor.disabled > 0){ // if char is doinf nothing because of disabled status
-					attemptor.disabled--; // reduce disabled status by 1 round
-				}
-				display("")
-				display(attemptor.name+" isn't doing anything...")
-				
-			}
-
+			
+// =============== AI Decision Making Logic and Action Choosing =====================
+			
+			// All possible actions are here (action name and its corresponding func name)
 			var possibleAllActions = [
 				{
 					"name":"do nothing",
@@ -504,7 +513,7 @@ function tickMainCharacter() {
 					return modifiedPriority
 				}
 
-				if(action=="attack") {
+				if(action=="attack") { // normal melee attack
 					modifiedPriority = roll.roll("d10").result
 					if(character.class=="attacker") {
 						modifiedPriority+=50;
@@ -518,7 +527,7 @@ function tickMainCharacter() {
 					
 					return modifiedPriority
 				}
-				if(action=="wild attack") {
+				if(action=="wild attack") { // easier to dodge but more damage
 					modifiedPriority = roll.roll("d10").result
 					if(character.class=="attacker") {
 						modifiedPriority+=50;
@@ -531,7 +540,7 @@ function tickMainCharacter() {
 					modifiedPriority += character.STR-opponent.END/5 || 0
 					return modifiedPriority
 				}
-				if(action=="cast Illusion") {
+				if(action=="cast Illusion") { // disables target for 2 rounds. if cast by player they continue to next room
 					modifiedPriority = roll.roll("d10").result
 					if(character.class=="Wizz") {
 						modifiedPriority+=50;
@@ -544,7 +553,7 @@ function tickMainCharacter() {
 					
 					return modifiedPriority
 				}
-				if(action=="do nothing") {
+				if(action=="do nothing") { // do nothing. usually triggered by stun, disable, and such
 					modifiedPriority = roll.roll("d10").result
 					
 					if (character.disabled>0){
@@ -559,7 +568,7 @@ function tickMainCharacter() {
 					
 					return modifiedPriority
 				}
-				if(action=="cast LifeSkin") {
+				if(action=="cast LifeSkin") { // heals 1-2 wounds. if healthy, grants 1-2 wounds protection for future damage
 					modifiedPriority = roll.roll("d10").result
 					if(character.class=="Wizz") {
 						modifiedPriority+=50;
