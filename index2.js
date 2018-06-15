@@ -237,6 +237,8 @@ function tickMainCharacter() {
 		if (rounds==0){
 			display("")
 			display("<<<<<<<< ROUND: "+rounds+" >>>>>>>>")
+			ch.disabled=0
+			monster.disabled=0
 
 			// calculate surprise
 			function surpriseCheckRoll (someone, someoneElse){
@@ -271,15 +273,21 @@ function tickMainCharacter() {
 			display("<<<<<<<< ROUND: "+rounds+" >>>>>>>>")
 			// Declaring some functions for use in combat phase
 
-			function basicMeleeToHitRoll (attacker,defender){
+			function basicMeleeToHitRoll (attacker,defender,meleeHandycap){
 				console.verbose("")
 				console.verbose(attacker.name + " is attacking " + defender.name)
+				//attacker modified roll
 				attackerModifiedRoll = roll.roll("d100").result + Math.max(attacker.STR, attacker.AGI, 10) + attacker.surpriseModifier;
+				attackerModifiedRoll -= attacker.wounds*8 || 0
+				attackerModifiedRoll -= meleeHandycap || 0
+				//defender modified roll
 				defenderModifiedRoll = roll.roll("d100").result + defender.AGI;
+				defenderModifiedRoll -= defender.wounds*8 || 0
+				defenderModifiedRoll -= (defender.disabled > 0 ? 100 : 0) // -100 to defender if disabled
 				
 				console.verbose(">>> "+attacker.name+"'s NATURAL attack bonus is: "+ Math.max(attacker.STR, attacker.AGI, 10).toString())
 				console.verbose(">>> "+attacker.name+"'s modified ATTACK roll: " + attackerModifiedRoll)
-				console.verbose("<<< "+defender.name+"'s modified DeFENSE roll: " + defenderModifiedRoll)
+				console.verbose("<<< "+defender.name+"'s modified DEFENSE roll: " + defenderModifiedRoll)
 				
 				if (attacker.surpriseModifier != 0)	{
 					attacker.surpriseModifier = 0
@@ -297,8 +305,8 @@ function tickMainCharacter() {
 
 			}
 			
-			function basicMeleeDamage (attacker, defender){
-				modifiedDamage = 1
+			function basicMeleeDamage (attacker, defender, baseDamage){
+				modifiedDamage = baseDamage
 				console.verbose("")
 				console.verbose ("modified damage starts at: " + modifiedDamage)
 				attackerDamageRoll = roll.roll("d100").result + attacker.STR
@@ -310,7 +318,7 @@ function tickMainCharacter() {
 
 				if((attackerDamageRoll - defenderDamageRoll) > 10){
 					display("")
-					display (attacker.name + "strikes a critical blow")
+					display (attacker.name + " strikes a critical blow")
 					modifiedDamage++;
 					console.verbose ("modified damage boosted to: " + modifiedDamage)
 
@@ -356,15 +364,29 @@ function tickMainCharacter() {
 			}
 
 			function melee(attemptor,target) {
-				characterAttackRoll = basicMeleeToHitRoll(attemptor, target)
+				characterAttackRoll = basicMeleeToHitRoll(attemptor, target,0)
 				
 				if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
 					display("")
 					display(attemptor.name + " hits " + target.name)
-					basicMeleeDamage (attemptor, target)
+					basicMeleeDamage (attemptor, target, 1)
 				} else { // if attemptor missed target
 					display("")
 					display(attemptor.name + " strikes at " + target.name + " but misses...")
+				}
+
+			}
+			
+			function wildAttack(attemptor,target) {
+				characterAttackRoll = basicMeleeToHitRoll(attemptor, target,25)
+				
+				if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
+					display("")
+					display(attemptor.name + " hits wildly at " + target.name)
+					basicMeleeDamage (attemptor, target, 2)
+				} else { // if attemptor missed target
+					display("")
+					display(attemptor.name + " strikes wildly at " + target.name + " but misses...")
 				}
 
 			}
@@ -376,21 +398,72 @@ function tickMainCharacter() {
 					//move to next room and set rounds to 0
 					ch.currentRoom+=1;
 					model.rounds=0
+				} else {
+					target.disabled=target.disabled==undefined ? 1 : target.disabled+1
 				}
-				attemptor.surpriseModifier=10
 				display("")
 				display("sneaking")
+				
+			}
+			
+			function castIllusion(attemptor,target) {
+				//check if succeed
+				// if so do:
+				if (attemptor == ch){ // if attemptor is player character
+					//move to next room and set rounds to 0
+					ch.currentRoom+=1;
+					model.rounds=0
+				} else { //if attemptor is monster
+					target.disabled=target.disabled==undefined ? 2 : target.disabled+2
+				}
+				display("")
+				display(attemptor.name + "is casting Illusion")
+				
+			}
+			
+			function castLifeSkin(attemptor) {
+				//check if succeed
+				// if so do:
+				attemptor.wounds-= roll.roll("12d").result
+				display("")
+				display(attemptor.name + "is casting LifeSkin")
+				
+			}
+			
+			function doNothing(attemptor) {
+				//use this for when stunned, disabled, mesmerized, etc.
+				if (attemptor.disabled > 0){ // if char is doinf nothing because of disabled status
+					attemptor.disabled--; // reduce disabled status by 1 round
+				}
+				display("")
+				display(attemptor.name+" isn't doing anything...")
 				
 			}
 
 			var possibleAllActions = [
 				{
+					"name":"do nothing",
+					"actionFunction" : doNothing
+				},
+				{
 					"name":"attack",
 					"actionFunction" : melee
 				},
 				{
+					"name":"wild attack",
+					"actionFunction" : wildAttack
+				},
+				{
 					"name":"sneak",
 					"actionFunction" : sneak
+				},
+				{
+					"name":"cast Illusion",
+					"actionFunction" : castIllusion
+				},
+				{
+					"name":"cast LifeSkin",
+					"actionFunction" : castLifeSkin
 				}
 			]
 
@@ -404,11 +477,13 @@ function tickMainCharacter() {
 						modifiedPriority+=50;
 					}
 					if (rounds==0)  {
-						modifiedPriority+=50;
+						modifiedPriority+=60;
 					}
-					if (rounds>0)  {
+					if (rounds>0 && character==ch && opponent.disabled<1)  {// if not first round character can't sneak but mobs can
+					// if monster is disabled then player can try to sneak past it
 						modifiedPriority-=999;
 					}
+					modifiedPriority += opponent.disabled*50
 					modifiedPriority += character.wounds*15 || 0
 					modifiedPriority += character.AGI/10 || 0
 					modifiedPriority += (character.PER - opponent.PER) /10
@@ -422,10 +497,65 @@ function tickMainCharacter() {
 						modifiedPriority+=50;
 					}
 					
-					
+					modifiedPriority += opponent.disabled*50 || 0
 					modifiedPriority -= character.wounds*15 || 0
 					modifiedPriority += opponent.wounds*15 || 0
 					modifiedPriority += character.STR/10 || 0
+					modifiedPriority += character.STR-opponent.END/5
+					
+					return modifiedPriority
+				}
+				if(action=="wild attack") {
+					modifiedPriority = roll.roll("d10").result
+					if(character.class=="attacker") {
+						modifiedPriority+=50;
+					}
+					
+					modifiedPriority += opponent.disabled*55 || 0
+					modifiedPriority -= character.wounds*15 || 0
+					modifiedPriority += opponent.wounds*15 || 0
+					modifiedPriority += character.STR/10 || 0
+					modifiedPriority += character.STR-opponent.END/5 || 0
+					return modifiedPriority
+				}
+				if(action=="cast Illusion") {
+					modifiedPriority = roll.roll("d10").result
+					if(character.class=="Wizz") {
+						modifiedPriority+=50;
+					}
+					
+					modifiedPriority -= opponent.disabled*50 || 0
+					modifiedPriority += character.wounds*15 || 0
+					modifiedPriority -= opponent.wounds*10 || 0
+					modifiedPriority += character.INT/10 || 0
+					
+					return modifiedPriority
+				}
+				if(action=="do nothing") {
+					modifiedPriority = roll.roll("d10").result
+					
+					if (character.disabled>0){
+						modifiedPriority +=9999
+					}
+					if (20-character.PER > 0){
+						modifiedPriority += 20-character.PER || 0
+					}
+					if (20-character.WIL > 0){
+						modifiedPriority += 20-character.PER || 0
+					}
+					
+					return modifiedPriority
+				}
+				if(action=="cast LifeSkin") {
+					modifiedPriority = roll.roll("d10").result
+					if(character.class=="Wizz") {
+						modifiedPriority+=50;
+					}
+					
+					modifiedPriority -= opponent.disabled*5 || 0
+					modifiedPriority += character.wounds*30 || 0
+					modifiedPriority -= opponent.wounds*10 || 0
+					modifiedPriority += character.INT/10 || 0
 					
 					return modifiedPriority
 				}
@@ -477,8 +607,10 @@ function tickMainCharacter() {
 
 			if(currentRoom.monster) monsterActions[0]["actionFunction"](monster,ch);
 			sleep(3)
+			console.verbose("")
 			console.verbose("    ##### "+ch.name+"'s Priorities #####")
             console.verbose(chActions)
+			console.verbose("")
 			console.verbose("    ##### "+monster.name+"'s Priorities #####")
             console.verbose(monsterActions)
             sleep(3)
@@ -527,6 +659,7 @@ function tickMainCharacter() {
 		
 		//console.verbose("End of Dave's place")
 		model.playerCharacters[0] = ch;
+		console.verbose("")
 		console.verbose(model.playerCharacters[0]);
 	} else {
 		// no monsters in the room
