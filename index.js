@@ -1,54 +1,10 @@
 var newsleep = require('system-sleep');
-function sleep(x) {
-    newsleep(x*1000)
+sleep = function(x) {
+    //newsleep(x*1000)
+    return 0;
 }
-/*
-prompt.get([{
-		name: 'username',
-		required: true
-	}, {
-		name: 'password',
-		required: true,
-		conform: function (value) {
-			console.log("passed validation")
-			return true;
-		}
-	}], function (err, result) {
-	//
-	// Log the results.
-	//
-	console.log('Command-line input received:');
-	console.log('  username: ' + result.username);
-	console.log('  password: ' + result.password);
-});
-*/
 
-
-// make a world with rooms, treasures, and monsters
-
-// create a character in interactive terminal
-
-// have the character traverse rooms
-// room - enter the room, pick the room card event (spawn monster)
-// initative check
-// whoever wins hits first
-// keep hitting in initiative order until someone dies
-//      hitting - everyone has one attack called basic, using primary attr
-//                if the char has a different attack (i.e. from loot)
-//                he gets that
-// if character dies - "Johan has died on the 3rd room"
-// if monster dies - "Johan has killed a monster in the 3rd room"
-// give johan a treasure card - treasure cards give xp which grant 2
-// points to prim attr, 1 to minor, 0 to opposite
-
-
-// Strength Speed Mind
-
-
-// load the rooms and monsters from airtable
-
-// log it to json
-
+var colors = require('colors/safe');
 
 console.verbose = function() {
   if(process.argv[2]=="verbose") {
@@ -56,28 +12,24 @@ console.verbose = function() {
   }
 }
 
+
+lastRequest = "";
 display = function(){
 	console.log.apply(null,arguments);
-	var guessTime = parseInt(arguments[0].toString().length/25,10)
-	if(guessTime > 1) {
-		sleep( guessTime);
-	} else {
-		sleep(1);
-	}
-	
+	lastRequest+=JSON.stringify(arguments);
 }
 
 
-var prompt = require('prompt');
 //var sleep = require('sleep').sleep;
-var Roll = require('roll'),
-  roll = new Roll();
- var clear = require('clear');
+Roll = require('roll');
+roll = new Roll();
+clear = require('clear');
 clear();
+
+logicLibrary = require('./src/gamelogic.js');
 //
 // Start the prompt
-//
-prompt.start();
+
 
 //
 // Get two properties from the user: username and password
@@ -86,21 +38,7 @@ prompt.start();
 
 // message string, propRequest string array, validatelogic precdicate, successCallback function
 function requestFromUser(message,propRequest,validateLogic,successCallback) {
-	console.log(message);
-	prompt.get(propRequest, function (err, result) {
-		//
-		// Log the results.
-		//
-		console.verbose("You said:");
-		console.verbose(result);
-		if(validateLogic(result)) {
-		  console.verbose("It passed validation");
-			return successCallback(result);
-		} else {
-			display("Did not validate! Try again:");
-			return requestFromUser(message,propRequest,validateLogic,successCallback);
-		}
-	});
+	
 }
 
 //requestFromUser("Welcome to HeroMaker!");
@@ -205,116 +143,12 @@ function buildWorld() {
 
 display("Loading data ... ");
 
-function startCharacterCreation(onFinished) {
-  display("Create your character!");
-  
-  var ch = {
-		name: "Benjy "+roll.roll("2d6").result,
-		alive: true
-	}
-	
-	
-	
-		requestFromUser("Name?",['name'],function(result){
-			return result.name!="";
-		},function(result){
-			ch.name = result.name;
-		
-			display("Assigning random attributes cause this is just a prototype atm");
-			ch.strength = roll.roll("2d3").result;
-			ch.speed = roll.roll("d3").result;
-			ch.willpower = roll.roll("d3").result;
-			ch.something = 3;
-		
-			onFinished(ch);
-		});
-	
-	
-	
-}
 
 function isMainCharacterAlive() {
 	return (model.playerCharacters[0].alive)
 }
 
-function tickMainCharacter() {
-  
-	
-	var ch = model.playerCharacters[0];
-	
-	var currentRoom = model.world[ch.currentRoom];
-	
-	// There is a monster in the room!
-	if(currentRoom.Monster) {
-	  var monster  = currentRoom.Monster;
-	  display(ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]);
-	  
-/*	  
-		
-		// fight loop
-		
-		var playerRoll = roll.roll("d6");
-		var playerStrengthModified = ch.strength+playerRoll.result;
-		
-		if(currentRoom.tombstone) {
-		  playerStrengthModified+=parseInt(monster.strength/3);
-	  	display("The fallen corpse of "+currentRoom.tombstone.name+" in this place gives you extra strength!");
-	  }
-		
-		display(ch.name+" rolled "+playerRoll.result+" for a total strength of "+playerStrengthModified);
-		
-		
-		var monsterRoll = roll.roll("d6");
-		var monsterStrengthModified = monster.strength+monsterRoll.result;
-		display(monster.name+" rolled "+monsterRoll.result+" for a total strength of "+monsterStrengthModified);
-		
-		
-		
-		if(playerStrengthModified > monsterStrengthModified) {
-			display(ch.name +" has overcome the "+monster.name+" in room #"+ch.currentRoom+"!");
-			var xpRoll = {result:1}; //roll.roll('d3');
-			display(ch.name +" gains "+xpRoll.result+" Strength!");
-			ch.strength+=xpRoll.result;
-			delete model.world[ch.currentRoom].Monster;
-			
-		} else {
-			display(ch.name+" has fallen to the "+monster.name+"'s blade!");
-			model.world[ch.currentRoom].tombstone = ch;
-			ch.causeOfDeath = monster.name;
-			ch.placeOfDeath = model.world[ch.currentRoom].name;
-			ch.alive = false;
-		}
-		*/
-		console.verbose("start of Dave's place")
-		console.verbose(ch)
-		console.verbose (monster)
-		
-		model.playerCharacters[0] = ch;
-		console.verbose(model.playerCharacters[0]);
-	} else {
-		// no monsters in the room
-		// this is where you could get loot
-		// for now you just go right in to the next room
-		model.playerCharacters[0].currentRoom+=1;
-		
-		if(model.playerCharacters[0].currentRoom>=model.world.length) {
-			// you finished the dungeon!
-			clear();
-			display("You won the game! all monsters are dead");
-			display("Your history: ");
-			display(model.playerCharacters);
-			prcoess.exit();
-		}
-		
-	}
-	
-	if(!model.playerCharacters[0].alive) {
-		model.playerCharacters[0].timeOfDeath = model.framesTicked;
-		
-	}
-	
-	model.framesTicked += 1;
-}
+
 
 
 
@@ -323,6 +157,89 @@ function tickMainCharacter() {
 
 
 // Initialization
+
+
+
+
+// the game's main loop is from char creation to death and then create another char
+
+
+
+var express    = require('express');        // call express
+var app        = express();                 // define our app using express
+var bodyParser = require('body-parser');
+
+// configure app to use bodyParser()
+// this will let us get the data from a POST
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+var port = process.env.PORT || 8080;        // set our port
+
+// ROUTES FOR OUR API
+// =============================================================================
+var router = express.Router();              // get an instance of the express Router
+
+// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
+router.post('/createCharacter', function(req, res) {
+    
+    
+    //soon: var aNewCharacter = req.body;
+    
+    var aNewCharacter = {}
+    
+    // in meantime:
+    
+    
+		aNewCharacter.name = req.body.name || "Benjy";
+	
+		display("Assigning random attributes cause this is just a prototype atm");
+		aNewCharacter.STR = roll.roll("d100").result+9;
+		aNewCharacter.PER = roll.roll("d100").result+9;
+		aNewCharacter.END = roll.roll("d100").result+9;
+		aNewCharacter.INT = roll.roll("d100").result+9;
+		aNewCharacter.AGI = roll.roll("d100").result+9;
+		//Introducing mana to chars with over 50 INT
+		aNewCharacter.mana = aNewCharacter.INT > 50 ? Math.floor((aNewCharacter.INT -40)/10) + roll.roll("d2").result-1 : 0
+		display (aNewCharacter.name + "starting Mana: "+aNewCharacter.mana)
+		
+		// for class/archetype generation.
+		//ch.archetype = roll.roll("d3").result
+		//ch.archetype = ch.archetype ==1 ? "fighter" : ch.archetype==2 ? "mage" : "thief"
+		display(aNewCharacter.name +" is a " + aNewCharacter.archetype)
+		aNewCharacter.level = 1
+		display("Starting " + aNewCharacter.name + " at level "+aNewCharacter.level)
+		
+		
+  	
+    
+    model.playerCharacters.unshift(aNewCharacter);
+		model.playerCharacters[0].currentRoom = 0;
+		model.playerCharacters[0].alive = true;
+    res.json({ message: 'Character is ready for action!' });   
+});
+
+router.get('/tick', function(req, res) {
+    lastRequest = "";
+    if(isMainCharacterAlive()) {
+      model = logicLibrary.tickMainCharacter(model);
+      res.json({ message: lastRequest, "model": model})
+    } else {
+    	res.json({ message: 'Last Character is dead - create a new one!' });   
+    }
+    
+});
+
+router.get('/model', function(req, res) {
+    res.json({ message: model})
+});
+
+
+// more routes for our API will happen here
+
+// REGISTER OUR ROUTES -------------------------------
+// all of our routes will be prefixed with /api
+app.use('/api', router);
 
 var model = {};
 
@@ -344,46 +261,14 @@ loadEntireBaseIntoAirtableData("Rooms",function(){
 			"framesTicked": 0
 		}
 		
-		display("Looking out, you see a road winding through:");
-		for(var i in world) {
-			console.log(world[i]["Room Description"]);
-		}
-		
+		app.listen(port);
 		// start the main loop!
-		return mainCreateCharacterDieLoop();
+		//return mainCreateCharacterDieLoop();
 	})
 })
 
 
-// the game's main loop is from char creation to death and then create another char
+// START THE SERVER
+// =============================================================================
 
-function mainCreateCharacterDieLoop() {
-	startCharacterCreation(function(aNewCharacter){
-		display("Character creation finished:");
-		display(aNewCharacter);
-		model.playerCharacters.unshift(aNewCharacter);
-		model.playerCharacters[0].currentRoom = 0;
-	
-		while(isMainCharacterAlive()) {
-			console.verbose("Playing frame #"+model.framesTicked);
-			display("...");
-			tickMainCharacter();
-			sleep(1);
-		}
-	 
-		display("The Hero named "+model.playerCharacters[0].name+" is dead!");
-		
-		display("They join the long list of heroes who sacrificed their lives:")
-		for(var i in model.playerCharacters) {
-		  var pcLevel = model.playerCharacters[i].strength;
-			display(model.playerCharacters[i].name+"\t\t\t who died at level \t"+pcLevel+"\tbecause of a  \t"+model.playerCharacters[i].causeOfDeath);
-		}
-		
-		display("------- Please Wait 5 Seconds -------")
-		sleep(5);
-		 clear();
-		display("Create a new character or press Ctrl C to exit.");
-		display("--------------")
-	  return mainCreateCharacterDieLoop();
-	})
-}
+console.log('Magic happens on port ' + port);
