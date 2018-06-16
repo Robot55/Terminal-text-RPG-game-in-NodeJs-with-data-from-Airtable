@@ -108,7 +108,7 @@ function tickMainCharacter(model) {
 			display(monster.name +"'s ACTION: "+monsterActions[0]["name"])
 			display("--------")
 
-			if(currentRoom.monster!=undefined) monsterActions[0]["actionFunction"](monster,ch);
+			if(!calculations.checkIfDead(monster)) monsterActions[0]["actionFunction"](monster,ch);
 			
 			sleep(3)
 			console.verbose("")
