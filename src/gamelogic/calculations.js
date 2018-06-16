@@ -1,4 +1,7 @@
 
+Roll = require('roll');
+roll = new Roll();
+
 module.exports = {
 
 

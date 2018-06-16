@@ -42,6 +42,13 @@ var app = new Vue({
 			  setTimeout(function(){
 				  $("#history")[0].scrollTop = 100000000;
 			  },200)
+			  
+			  
+			  if($("#formInput23").prop('checked')) {
+				  setTimeout(function(){
+					  app.nextTick();
+				  },1000)
+			  }
 		  });
 	  }
   }

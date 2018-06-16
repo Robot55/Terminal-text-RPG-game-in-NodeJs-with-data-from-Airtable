@@ -271,4 +271,4 @@ loadEntireBaseIntoAirtableData("Rooms",function(){
 // START THE SERVER
 // =============================================================================
 
-console.log('Magic happens on port ' + port);
+console.log('Magic happens on localhost, port ' + port);

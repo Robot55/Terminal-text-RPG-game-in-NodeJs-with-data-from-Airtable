@@ -1,5 +1,6 @@
 var calculations = require('./calculations.js');
-
+Roll = require('roll');
+roll = new Roll();
 
 // ================== All Possible Action Functions ================
 			
@@ -75,7 +76,7 @@ function castIllusion(attemptor,target,model) {
 function castLifeSkin(attemptor,target,model) {
 	//check if succeed
 	// if so do:
-	attemptor.wounds-= roll.roll("12d").result
+	attemptor.wounds-= roll.roll("d12").result
 	display("")
 	display(attemptor.name + "is casting LifeSkin")
 	
