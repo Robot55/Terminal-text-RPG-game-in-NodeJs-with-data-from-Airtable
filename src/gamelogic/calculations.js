@@ -4,35 +4,31 @@ roll = new Roll();
 
 module.exports = {
 
-
+	//Surprise Roll
 	surpriseCheckRoll: function  (someone, someoneElse){
 		someone.surpriseModifier=0
 		someoneElse.surpriseModifier=0
 		
 		someoneModifiedRoll = roll.roll("d100").result + someone.AGI - someoneElse.PER
 		someoneElseModifiedRoll = roll.roll("d100").result + someoneElse.AGI - someone.PER
-		console.verbose("")
-		console.verbose("??? Checking for Surprise ???")
-		console.verbose(someone.name + " rolled " + someoneModifiedRoll + "for surprise")
-		console.verbose(someoneElse.name + " rolled " + someoneElseModifiedRoll + "for surprise")
+		console.verbose("SURPRISE check:")
+		console.verbose("    "+someone.name + " rolled " + someoneModifiedRoll + "for surprise")
+		console.verbose("    "+someoneElse.name + " rolled " + someoneElseModifiedRoll + "for surprise")
 
-		if (someoneModifiedRoll > someoneElseModifiedRoll) {
-			display("")
-			display(someone.name + " managed to surprise the " +someoneElse.name)
+		if (someoneModifiedRoll - someoneElseModifiedRoll > 25) {
+			display(someone.name + " managed to SURPRISE the " +someoneElse.name)
 			someone.surpriseModifier=10;
-		} else if (someoneElseModifiedRoll > someoneModifiedRoll) {
-			display("")
-			display(someone.name + " managed to surprise the " +someoneElse.name)
+		} else if (someoneElseModifiedRoll - someoneModifiedRoll > 25) {
+			display(someone.name + " managed to SURPRISE the " +someoneElse.name)
 			someoneElse.surpriseModifier=10;
 		} else {
-			console.verbose("")
-			console.verbose("neither side managed to surprise the other")
+			console.verbose("    Neither side managed to SURPRISE the other")
 		}
 	},
 
 	basicMeleeToHitRoll: function  (attacker,defender,meleeHandycap){
-		console.verbose("")
-		console.verbose(attacker.name + " is attacking " + defender.name)
+		console.verbose("MELEE HIT ROLL:")
+		console.verbose("    "+attacker.name + " is attacking " + defender.name)
 		//attacker modified roll
 		attackerModifiedRoll = roll.roll("d100").result + Math.max(attacker.STR, attacker.AGI, 10) + attacker.surpriseModifier;
 		attackerModifiedRoll -= attacker.wounds*8 || 0
@@ -42,13 +38,13 @@ module.exports = {
 		defenderModifiedRoll -= defender.wounds*8 || 0
 		defenderModifiedRoll -= (defender.disabled > 0 ? 100 : 0) // -100 to defender if disabled
 		
-		console.verbose(">>> "+attacker.name+"'s NATURAL attack bonus is: "+ Math.max(attacker.STR, attacker.AGI, 10).toString())
-		console.verbose(">>> "+attacker.name+"'s modified ATTACK roll: " + attackerModifiedRoll)
-		console.verbose("<<< "+defender.name+"'s modified DEFENSE roll: " + defenderModifiedRoll)
+		console.verbose("    "+attacker.name+"'s NATURAL attack bonus is: "+ Math.max(attacker.STR, attacker.AGI, 10).toString())
+		console.verbose("    "+attacker.name+"'s modified ATTACK roll: " + attackerModifiedRoll)
+		console.verbose("    "+defender.name+"'s modified DEFENSE roll: " + defenderModifiedRoll)
 		
 		if (attacker.surpriseModifier != 0)	{
 			attacker.surpriseModifier = 0
-			console.verbose (attacker.name + "'s surprise modifier was used and will be set to 0 now")
+			console.verbose ("    "+attacker.name + "'s surprise modifier was used and will be set to 0 now")
 		}
 
 		if (attackerModifiedRoll > defenderModifiedRoll) {
@@ -63,27 +59,25 @@ module.exports = {
 	},
 	// basic Damage Roll
 	basicMeleeDamage: function  (attacker, defender, baseDamage){
+		console.verbose("DAMAGE ROLL:")
+		console.verbose ("    base damage: " + baseDamage)
 		modifiedDamage = baseDamage
-		console.verbose("")
-		console.verbose ("modified damage starts at: " + modifiedDamage)
 		attackerDamageRoll = roll.roll("d100").result + attacker.STR
 		defenderDamageRoll = roll.roll("d100").result + defender.END
 
-		console.verbose(attacker.name + "'s STR modified roll is: " + attackerDamageRoll)
-		console.verbose(defender.name + "'s END modified roll is: " + defenderDamageRoll)
+		console.verbose("    "+attacker.name + "'s STR roll: " + attackerDamageRoll)
+		console.verbose("    "+defender.name + "'s END roll: " + defenderDamageRoll)
 
 
-		if((attackerDamageRoll - defenderDamageRoll) > 10){
-			display("")
-			display (attacker.name + " strikes a critical blow")
+		if((attackerDamageRoll - defenderDamageRoll) > 15){
 			modifiedDamage++;
-			console.verbose ("modified damage boosted to: " + modifiedDamage)
+			console.verbose ("    "+attacker.name +" crits. Modified damage: " + modifiedDamage)
+			display (attacker.name + " strikes a CRITICAL blow")
 
-		} else if ((defenderDamageRoll - attackerDamageRoll) >10){
-			display("")
-			display (defender.name + " withstands the force of the blow (DMG RESIST)")
+		} else if ((defenderDamageRoll - attackerDamageRoll) > 15){
 			modifiedDamage--;
-			console.verbose ("modified damage nerfed to: " + modifiedDamage)
+			console.verbose ("    "+defender.name+" resists. Modified damage: " + modifiedDamage)
+			display (defender.name + " RESISTS the force of the blow")
 
 		}
 		if (modifiedDamage > 0){
@@ -94,20 +88,14 @@ module.exports = {
 			} else {
 				defender.wounds = defender.wounds + modifiedDamage
 			}
-		display("")
-		display("xXx")
-		display (defender.name + " winces in pain.")
-		console.verbose (defender.name + " is hit for: " + modifiedDamage)
-		display("xXx")
+		console.verbose ("    "+defender.name + " is hit for: " + modifiedDamage)
+		txt = modifiedDamage==1 ? " WINCES in pain." : modifiedDamage==2 ? " SCREAMS in great pain!" : " SHRIEKS in anguish!!"
+		display (defender.name + txt)
+
 			
 		} else { // if modified damage not larger than zero
-			display("")
-			display("xXx")
-			display(defender.name + " shrugs off the blow")
-			console.verbose (defender.name + " is 'hit' for: " + modifiedDamage)
-			display("xXx")
-			
-
+			console.verbose ("    "+defender.name + " is 'hit' for: " + modifiedDamage)
+			display(defender.name + " SCOFFS at the weak blow")
 		}
 		
 	},

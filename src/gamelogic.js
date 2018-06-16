@@ -127,41 +127,48 @@ function tickMainCharacter(model) {
 			sleep(3)
 
 
-			
-			console.verbose("checking to see if player is dead")
-			if (calculations.checkIfDead(ch)){
-				display("")
-				display("xXx")
-				display(ch.name + " has died")
-				display("xXx")
-				model.world[ch.currentRoom].tombstone = ch;
-				ch.causeOfDeath = monster.name;
-				ch.placeOfDeath = model.world[ch.currentRoom].name;
-				ch.alive = false;
-				model.rounds=0
-			} else {
-				console.verbose("")
-				console.verbose (ch.name + " is alive")
-			}
-
-			console.verbose("checking to see if monster is dead")
-
-			if ( calculations.checkIfDead(monster)){ // if monster died
-				display("")
-				display("xXx")
-				display (monster.name + " has died from " +monster.wounds + " wounds")
-				display("xXx")
-				sleep(1)
-				model.world[ch.currentRoom].Monster = false;
-			}  else {
-				console.verbose("")
-				console.verbose (monster.name + " is alive")
+			function ifPlayerIsDead(){	
+				console.verbose("checking to see if player is dead")
+				if (calculations.checkIfDead(ch)){
+					display("")
+					display("xXx")
+					display(ch.name + " has died")
+					display("xXx")
+					model.world[ch.currentRoom].tombstone = ch;
+					ch.causeOfDeath = monster.name;
+					ch.placeOfDeath = model.world[ch.currentRoom].name;
+					ch.alive = false;
+					model.rounds=0
+				} else {
+					console.verbose("")
+					console.verbose (ch.name + " is alive")
+				}
 			}
 			
-			if(model.rounds!=undefined){
-				model.rounds++
-			}
+			function ifMonserIsDead(){
+				console.verbose("checking to see if monster is dead")
 
+				if ( calculations.checkIfDead(monster)){ // if monster died
+					display("")
+					display("xXx")
+					display (monster.name + " has died from " +monster.wounds + " wounds")
+					display("xXx")
+					sleep(1)
+					model.world[ch.currentRoom].Monster = false;
+				}  else {
+					console.verbose("")
+					console.verbose (monster.name + " is alive")
+				}
+				
+				if(model.rounds!=undefined){
+					model.rounds++
+				}
+				
+			}
+		
+		ifPlayerIsDead()
+		ifMonserIsDead()
+		
 		// end of COMBAT PHASE	
 		}
 				

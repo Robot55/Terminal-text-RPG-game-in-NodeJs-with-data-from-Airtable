@@ -2,15 +2,25 @@ var calculations = require('./calculations.js');
 Roll = require('roll');
 roll = new Roll();
 
+// == DAVE's Helper Functions
+
+function checkIfPlayer (someone){ // returns true if someone is the player character
+	if (someone == model.playerCharacters[0]){
+		return true;
+	}		
+	
+}
+
 // ================== All Possible Action Functions ================
 			
 function doNothing(attemptor,target,model) {
 	//use this for when stunned, disabled, mesmerized, etc.
-	if (attemptor.disabled > 0){ // if char is doinf nothing because of disabled status
+	if (attemptor.disabled > 0){ // if char is doin nothing because of disabled status
 		attemptor.disabled--; // reduce disabled status by 1 round
+		console.verbose("    "+ attemptor.name+"'s disabled status reduced from: "+(attemptor.disabled+1) +" to: "+attemptor.disabled)
 	}
-	display("")
-	display(attemptor.name+" isn't doing anything...")
+	txt = attemptor.disabled > 0 ? " CAN'T ACT this round" : " is doing NOTHING"
+	display(attemptor.name+txt)
 	
 }
 
@@ -18,12 +28,10 @@ function melee(attemptor,target,model) { //use for basic melee attacks
 	characterAttackRoll = calculations.basicMeleeToHitRoll(attemptor, target,0)
 	
 	if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
-		display("")
-		display(attemptor.name + " hits " + target.name)
+		display(attemptor.name + " HITS " + target.name)
 		calculations.basicMeleeDamage (attemptor, target, 1)
 	} else { // if attemptor missed target
-		display("")
-		display(attemptor.name + " strikes at " + target.name + " but misses...")
+		display(attemptor.name + " MISSES " + target.name)
 	}
 
 }
@@ -32,12 +40,10 @@ function wildAttack(attemptor,target,model) { // more likely to miss but more dm
 	characterAttackRoll = calculations.basicMeleeToHitRoll(attemptor, target,25)
 	
 	if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
-		display("")
-		display(attemptor.name + " hits wildly at " + target.name)
+		display(attemptor.name + "'s wild attack HITS " + target.name)
 		calculations.basicMeleeDamage (attemptor, target, 2)
 	} else { // if attemptor missed target
-		display("")
-		display(attemptor.name + " strikes wildly at " + target.name + " but misses...")
+		display(attemptor.name + "'s wild attack MISSES " + target.name)
 	}
 
 }
@@ -53,7 +59,7 @@ function sneak(attemptor,target,model) { 	// can be done on first round or when 
 	} else {
 		target.disabled=target.disabled==undefined ? 1 : target.disabled+1
 	}
-	display("")
+	txt = ""
 	display("sneaking")
 	
 }
