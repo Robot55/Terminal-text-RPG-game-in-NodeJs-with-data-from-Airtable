@@ -12,7 +12,7 @@ var Roll = require('roll'),
 
 
 
-function  tickMainCharacter(model) {
+function tickMainCharacter(model) {
 	var ch = model.playerCharacters[0];
 	
 	var currentRoom = model.world[ch.currentRoom];
@@ -108,7 +108,8 @@ function  tickMainCharacter(model) {
 			display(monster.name +"'s ACTION: "+monsterActions[0]["name"])
 			display("--------")
 
-			if(currentRoom.monster) monsterActions[0]["actionFunction"](monster,ch);
+			if(currentRoom.monster!=undefined) monsterActions[0]["actionFunction"](monster,ch);
+			
 			sleep(3)
 			console.verbose("")
 			console.verbose("    ##### "+ch.name+"'s Priorities #####")

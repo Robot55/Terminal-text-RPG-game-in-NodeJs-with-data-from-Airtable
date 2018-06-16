@@ -19,7 +19,7 @@ display = function(){
 	} else {
 	//	sleep(1);
 	}
-	
+	sleep(1)
 }
 
 
