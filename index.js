@@ -186,29 +186,8 @@ router.post('/createCharacter', function(req, res) {
     
     //soon: var aNewCharacter = req.body;
     
-    var aNewCharacter = {}
-    
-    // in meantime:
-    
-    
-		aNewCharacter.name = req.body.name || "Benjy";
-	
-		display("Assigning random attributes cause this is just a prototype atm");
-		aNewCharacter.STR = roll.roll("d100").result+9;
-		aNewCharacter.PER = roll.roll("d100").result+9;
-		aNewCharacter.END = roll.roll("d100").result+9;
-		aNewCharacter.INT = roll.roll("d100").result+9;
-		aNewCharacter.AGI = roll.roll("d100").result+9;
-		//Introducing mana to chars with over 50 INT
-		aNewCharacter.mana = aNewCharacter.INT > 50 ? Math.floor((aNewCharacter.INT -40)/10) + roll.roll("d2").result-1 : 0
-		display (aNewCharacter.name + "starting Mana: "+aNewCharacter.mana)
+    var aNewCharacter = gamelogic.characterCreation.createANewCharacter();
 		
-		// for class/archetype generation.
-		//ch.archetype = roll.roll("d3").result
-		//ch.archetype = ch.archetype ==1 ? "fighter" : ch.archetype==2 ? "mage" : "thief"
-		display(aNewCharacter.name +" is a " + aNewCharacter.archetype)
-		aNewCharacter.level = 1
-		display("Starting " + aNewCharacter.name + " at level "+aNewCharacter.level)
 		
 		
   	

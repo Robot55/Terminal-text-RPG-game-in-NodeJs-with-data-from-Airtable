@@ -166,42 +166,10 @@ function buildWorld() {
 display("Loading data ... ");
 
 function startCharacterCreation(onFinished) {
-  display("Create your character!");
-  // Character Creation
-  var ch = {
-		name: "Benjy "+roll.roll("2d6").result,
-		alive: true
-	}
-	
-	
-	
-		return requestFromUser("Name?",['name'],function(result){
-			return result.name!="";
-		},function(result){
-			ch.name = result.name;
+
+	var aNewCharacter = logicLibrary.characterCreation.createANewCharacter();
+	return onFinished(aNewCharacter);
 		
-			display("Assigning random attributes cause this is just a prototype atm");
-			ch.STR = roll.roll("d100").result+9;
-			ch.PER = roll.roll("d100").result+9;
-			ch.END = roll.roll("d100").result+9;
-			ch.INT = roll.roll("d100").result+9;
-			ch.AGI = roll.roll("d100").result+9;
-			//Introducing mana to chars with over 50 INT
-			ch.mana = ch.INT > 50 ? Math.floor((ch.INT -40)/10) + roll.roll("d2").result-1 : 0
-			display (ch.name + "starting Mana: "+ch.mana)
-			
-			// for class/archetype generation.
-			//ch.archetype = roll.roll("d3").result
-			//ch.archetype = ch.archetype ==1 ? "fighter" : ch.archetype==2 ? "mage" : "thief"
-			display(ch.name +" is a " + ch.archetype)
-			ch.level = 1
-			display("Starting " + ch.name + " at level "+ch.level)
-		
-			return onFinished(ch);
-		});
-	
-	
-	
 }
 
 function isMainCharacterAlive() {

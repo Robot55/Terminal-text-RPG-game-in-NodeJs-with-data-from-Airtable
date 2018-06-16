@@ -2,6 +2,7 @@
 
 var actions = require('./gamelogic/actions.js');
 var calculations = require('./gamelogic/calculations.js');
+var characterCreation = require('./gamelogic/characterCreation.js');
 
 
 var Roll = require('roll'),
@@ -10,7 +11,7 @@ var Roll = require('roll'),
  // Basic Surprise Roll
 
 
-
+ 
 
 function tickMainCharacter(model) {
 	var ch = model.playerCharacters[0];
@@ -199,3 +200,4 @@ function tickMainCharacter(model) {
 	
 module.exports = {};
 module.exports["tickMainCharacter"] = tickMainCharacter;
+module.exports["characterCreation"] = characterCreation
