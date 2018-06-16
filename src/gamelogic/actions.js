@@ -76,15 +76,22 @@ function castIllusion(attemptor,target,model) {
 function castLifeSkin(attemptor,target,model) {
 	//check if succeed
 	// if so do:
-	attemptor.wounds-= roll.roll("d12").result
+	console.verbose("starting lifeSkin calculations...")
+	dieRoll = roll.roll("d2").result
+	attemptor.wounds-= dieRoll
+	console.verbose(attemptor.name + " rolled: " + dieRoll + "wounds to heal and now have: " + attemptor.wounds + " wounds")
+	txt = attemptor.wounds >= 0 ? " was healed for " + dieRoll +" wounds" : " was fully healed and gained " + attemptor.wounds*-1 + " point(s) of magical armor"
 	display("")
-	display(attemptor.name + "is casting LifeSkin")
+	display(attemptor.name + " cast LifeSkin and" + txt)
 	
 }
 
+
+// Priorities and Probability Calculations
+
 function doNothingPriority (character,opponent,action,model) {
 		var modifiedPriority = 0;
-		modifiedPriority = roll.roll("d10").result
+		modifiedPriority = roll.roll("d10").result //+50
 		
 		if (character.disabled>0){
 			modifiedPriority +=9999
@@ -101,7 +108,7 @@ function doNothingPriority (character,opponent,action,model) {
 
 function meleePriority(character,opponent,action,model) {
 	var modifiedPriority = 0;
-	modifiedPriority = roll.roll("d10").result
+	modifiedPriority = roll.roll("d10").result //+50
 	if(character.class=="attacker") {
 		modifiedPriority+=50;
 	}
@@ -117,7 +124,7 @@ function meleePriority(character,opponent,action,model) {
 
 function wildAttackPriority(character,opponent,action,model) {
 				var modifiedPriority = 0;
-				modifiedPriority = roll.roll("d10").result
+				modifiedPriority = roll.roll("d10").result //+50
 				if(character.class=="attacker") {
 					modifiedPriority+=50;
 				}
@@ -133,7 +140,7 @@ function wildAttackPriority(character,opponent,action,model) {
 			
 function sneakPriority(character,opponent,action,model) {
 	var modifiedPriority = 0;
-	modifiedPriority = roll.roll("d10").result
+	modifiedPriority = roll.roll("d10").result //+50
 	if (character.class=="sneaker")  {
 		modifiedPriority+=50;
 	}
@@ -144,7 +151,7 @@ function sneakPriority(character,opponent,action,model) {
 	// if monster is disabled then player can try to sneak past it
 		modifiedPriority-=999;
 	}
-	modifiedPriority += opponent.disabled*50
+	modifiedPriority += character==model.playerCharacters[0] ? opponent.disabled*50 : opponent.disabled*-50
 	modifiedPriority += character.wounds*15 || 0
 	modifiedPriority += character.AGI/10 || 0
 	modifiedPriority += (character.PER - opponent.PER) /10
@@ -154,7 +161,7 @@ function sneakPriority(character,opponent,action,model) {
 
 function castIllusionPriority (character,opponent,action,model) {
 				var modifiedPriority = 0;
-				modifiedPriority = roll.roll("d10").result
+				modifiedPriority = roll.roll("d10").result //+50
 				if(character.class=="Wizz") {
 					modifiedPriority+=50;
 				}
@@ -170,7 +177,7 @@ function castIllusionPriority (character,opponent,action,model) {
 			
 function castLifeSkinPriority (character,opponent,action,model) {
 				var modifiedPriority = 0;
-				modifiedPriority = roll.roll("d10").result
+				modifiedPriority = roll.roll("d10").result //+50
 				if(character.class=="Wizz") {
 					modifiedPriority+=50;
 				}

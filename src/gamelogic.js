@@ -8,18 +8,21 @@ var characterCreation = require('./gamelogic/characterCreation.js');
 var Roll = require('roll'),
   roll = new Roll();
   
- // Basic Surprise Roll
 
 
- 
 
 function tickMainCharacter(model) {
 	var ch = model.playerCharacters[0];
+	ch.wounds = ch.wounds == undefined ? 0 : ch.wounds // when tick start, if character has no wounds value set it to 0 (unharmed)
+	ch.disabled = ch.disabled == undefined ? 0 : ch.disabled // when tick start, if character has no disabled value set it to 0 (free to act)
 	
 	var currentRoom = model.world[ch.currentRoom];
 	// There is a monster in the room!
 	if(currentRoom.Monster) {
 	  var monster  = currentRoom.Monster;
+	  //initialization of stats if undefined
+	  monster.wounds = monster.wounds == undefined ? 0 : monster.wounds // if monster exists in room, set its wounds to 0  if it is undefined
+	  monster.disabled = monster.disabled == undefined ? 0 : monster.disabled // if monster exists in room, set its disabled to 0  if it is undefined
 	  
 	  // if monster has undefined mana - randomize some mana
 	  if (monster.mana == undefined){
@@ -27,8 +30,7 @@ function tickMainCharacter(model) {
 		  console.verbose("")
 		  console.verbose(monster.name + " Mana set to: "+monster.mana)
 	  }
-	  // Display contextual message each tick (changes if beginning, middle or end of encounter
-
+	  // Function to construct contextual message each tick (changes if beginning, middle or end of encounter
 	  function displayEveryTickMessage (){
 		var messageString = new String("");
 		if (model.rounds == 0 || model.rounds == undefined){
@@ -38,9 +40,9 @@ function tickMainCharacter(model) {
 		}
 		return messageString
 	  }
+	  //Actually display contextual ENCOUNTER MESSAGE
 	  contextualText = displayEveryTickMessage()
 	  display (contextualText)
-	  //display(ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]);
 	  
 
 		//console.verbose("start of Dave's place")
@@ -99,7 +101,7 @@ function tickMainCharacter(model) {
 			display(ch.name +"'s ACTION: "+chActions[0]["name"])
 			display("--------")
 
-			chActions[0]["actionFunction"](ch,monster,model);
+			chActions[0]["actionFunction"](ch,monster,model); //Execute character action
 
 			monsterActions = monsterActions.sort(function(a,b){
 				return b.priority-a.priority;
@@ -109,7 +111,11 @@ function tickMainCharacter(model) {
 			display(monster.name +"'s ACTION: "+monsterActions[0]["name"])
 			display("--------")
 
-			if(!calculations.checkIfDead(monster)) monsterActions[0]["actionFunction"](monster,ch,model);
+			if(!calculations.checkIfDead(monster)){ //if monster didn't suffer enough wounds to die from character action
+			monsterActions[0]["actionFunction"](monster,ch,model); //Execute monster action
+			} else {
+				console.verbose("!! ATTN !! " + monster.name + "would have acted now but suffered enough wounds to die")
+			}
 			
 			sleep(3)
 			console.verbose("")
@@ -121,7 +127,6 @@ function tickMainCharacter(model) {
 			sleep(3)
 
 
-			
 			
 			console.verbose("checking to see if player is dead")
 			if (calculations.checkIfDead(ch)){
