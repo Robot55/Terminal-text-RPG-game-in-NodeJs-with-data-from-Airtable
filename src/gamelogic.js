@@ -13,41 +13,49 @@ var Roll = require('roll'),
 
 function tickMainCharacter(model) {
 	var ch = model.playerCharacters[0];
+	//initialization of CHAR stats if undefined
 	ch.wounds = ch.wounds == undefined ? 0 : ch.wounds // when tick start, if character has no wounds value set it to 0 (unharmed)
 	ch.disabled = ch.disabled == undefined ? 0 : ch.disabled // when tick start, if character has no disabled value set it to 0 (free to act)
 	
 	var currentRoom = model.world[ch.currentRoom];
 	// There is a monster in the room!
 	if(currentRoom.Monster) {
-	  var monster  = currentRoom.Monster;
-	  //initialization of stats if undefined
-	  monster.wounds = monster.wounds == undefined ? 0 : monster.wounds // if monster exists in room, set its wounds to 0  if it is undefined
-	  monster.disabled = monster.disabled == undefined ? 0 : monster.disabled // if monster exists in room, set its disabled to 0  if it is undefined
+		var monster  = currentRoom.Monster;
+		//initialization of MONSTER stats if undefined
+		monster.wounds = monster.wounds == undefined ? 0 : monster.wounds // if monster exists in room, set its wounds to 0  if it is undefined
+		monster.disabled = monster.disabled == undefined ? 0 : monster.disabled // if monster exists in room, set its disabled to 0  if it is undefined
 	  
-	  // if monster has undefined mana - randomize some mana
-	  if (monster.mana == undefined){
-		  monster.mana = monster.INT > 50 ? Math.floor((monster.INT -40)/10) + roll.roll("d2").result-1 : 0
-		  console.verbose("")
-		  console.verbose(monster.name + " Mana set to: "+monster.mana)
-	  }
-	  // Function to construct contextual message each tick (changes if beginning, middle or end of encounter
-	  function displayEveryTickMessage (){
-		var messageString = new String("");
-		if (model.rounds == 0 || model.rounds == undefined){
-			messageString +="NEW ROOM: " + ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]
-		} else {
-			messageString += ch.name +" is engaging "+monster.name+" in "+currentRoom["Room Description"]	  		
+		// if monster has undefined mana - randomize some mana
+		if (monster.mana == undefined){
+			
+			monster.mana = monster.INT > 50 ? Math.floor((monster.INT -40)/10) + roll.roll("d2").result-1 : 0
+			console.verbose("MONSTER MANA generation:")
+			console.verbose("    "+monster.name + " Mana set to: "+monster.mana)
 		}
-		return messageString
-	  }
-	  //Actually display contextual ENCOUNTER MESSAGE
-	  contextualText = displayEveryTickMessage()
-	  display (contextualText)
+	  
+		// Function to construct contextual message each tick (changes if beginning, middle or end of encounter
+		function displayEveryTickMessage (){
+			var messageString = new String("");
+			if (model.rounds == 0 || model.rounds == undefined){
+				messageString +="NEW ROOM: " + ch.name +" has encountered a "+monster.name+" in "+currentRoom["Room Description"]
+			} else {
+				messageString += ch.name +" is engaging "+monster.name+" in "+currentRoom["Room Description"]	  		
+			}
+			return messageString
+		}
+		
+		//Actually display contextual ENCOUNTER MESSAGE
+		contextualText = displayEveryTickMessage()
+		display (contextualText)
 	  
 
-		//console.verbose("start of Dave's place")
+		//Dump Json of both player and monster
+		console.verbose("### "+ch.name.toUpperCase() + " DUMP:")
 		console.verbose(ch)
+		console.verbose("")
+		console.verbose ("### "+monster.name.toUpperCase() + " DUMP:")
 		console.verbose (monster)
+		console.verbose("")
 		
 		// Create Turn Based Time
 		if (model.rounds==undefined){
@@ -55,7 +63,6 @@ function tickMainCharacter(model) {
 		}
 		
 		if (model.rounds==0){
-			display("")
 			display("<<<<<<<< ROUND: "+model.rounds+" >>>>>>>>")
 			ch.disabled=0
 			monster.disabled=0
@@ -65,7 +72,6 @@ function tickMainCharacter(model) {
 			model.rounds++
 			
 		} else if (model.rounds>0){
-			display("")
 			display("<<<<<<<< ROUND: "+model.rounds+" >>>>>>>>")
 			
 			var possibleAllActions = actions.getAllActions();
@@ -118,12 +124,13 @@ function tickMainCharacter(model) {
 			}
 			
 			sleep(3)
-			console.verbose("")
-			console.verbose("    ##### "+ch.name+"'s Priorities #####")
+			console.verbose("-- PRIORITY CALCULATIONS --")
+			console.verbose("    "+ch.name.toUpperCase()+"'s Priorities dump")
 			console.verbose(chActions)
 			console.verbose("")
-			console.verbose("    ##### "+monster.name+"'s Priorities #####")
+			console.verbose("    "+monster.name.toUpperCase()+"'s Priorities dump")
 			console.verbose(monsterActions)
+			console.verbose("")
 			sleep(3)
 
 
@@ -166,8 +173,8 @@ function tickMainCharacter(model) {
 				
 			}
 		
-		ifPlayerIsDead()
-		ifMonserIsDead()
+			ifPlayerIsDead()
+			ifMonserIsDead()
 		
 		// end of COMBAT PHASE	
 		}
