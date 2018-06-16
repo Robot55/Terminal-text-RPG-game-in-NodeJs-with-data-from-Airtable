@@ -3,7 +3,7 @@ var calculations = require('./calculations.js');
 
 // ================== All Possible Action Functions ================
 			
-function doNothing(attemptor) {
+function doNothing(attemptor,target,model) {
 	//use this for when stunned, disabled, mesmerized, etc.
 	if (attemptor.disabled > 0){ // if char is doinf nothing because of disabled status
 		attemptor.disabled--; // reduce disabled status by 1 round
@@ -13,7 +13,7 @@ function doNothing(attemptor) {
 	
 }
 
-function melee(attemptor,target) { //use for basic melee attacks
+function melee(attemptor,target,model) { //use for basic melee attacks
 	characterAttackRoll = calculations.basicMeleeToHitRoll(attemptor, target,0)
 	
 	if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
@@ -27,7 +27,7 @@ function melee(attemptor,target) { //use for basic melee attacks
 
 }
 
-function wildAttack(attemptor,target) { // more likely to miss but more dmg
+function wildAttack(attemptor,target,model) { // more likely to miss but more dmg
 	characterAttackRoll = calculations.basicMeleeToHitRoll(attemptor, target,25)
 	
 	if (characterAttackRoll=="hit"){ // if attemptor managed to hit target
@@ -41,13 +41,13 @@ function wildAttack(attemptor,target) { // more likely to miss but more dmg
 
 }
 
-function sneak(attemptor,target) { 	// can be done on first round or when enemy disabled. 
+function sneak(attemptor,target,model) { 	// can be done on first round or when enemy disabled. 
 									//lets player go to next room or monster to disable player for 1 round
 	//check if succeed
 	// if so do:
-	if (attemptor == ch){
+	if (attemptor == model.playerCharacters[0]){
 		//move to next room and set rounds to 0
-		ch.currentRoom+=1;
+		model.playerCharacters[0].currentRoom+=1;
 		model.rounds=0
 	} else {
 		target.disabled=target.disabled==undefined ? 1 : target.disabled+1
@@ -57,12 +57,12 @@ function sneak(attemptor,target) { 	// can be done on first round or when enemy 
 	
 }
 
-function castIllusion(attemptor,target) {
+function castIllusion(attemptor,target,model) {
 	//check if succeed
 	// if so do:
-	if (attemptor == ch){ // if attemptor is player character
+	if (attemptor == model.playerCharacters[0]){ // if attemptor is player character
 		//move to next room and set rounds to 0
-		ch.currentRoom+=1;
+		model.playerCharacters[0].currentRoom+=1;
 		model.rounds=0
 	} else { //if attemptor is monster
 		target.disabled=target.disabled==undefined ? 2 : target.disabled+2
@@ -72,7 +72,7 @@ function castIllusion(attemptor,target) {
 	
 }
 
-function castLifeSkin(attemptor) {
+function castLifeSkin(attemptor,target,model) {
 	//check if succeed
 	// if so do:
 	attemptor.wounds-= roll.roll("12d").result
@@ -81,56 +81,40 @@ function castLifeSkin(attemptor) {
 	
 }
 
-			
-// =============== AI Decision Making Logic and Action Choosing =====================
-			
-module.exports = {getAllActions : function() {		
+function doNothingPriority (character,opponent,action,model) {
+		var modifiedPriority = 0;
+		modifiedPriority = roll.roll("d10").result
+		
+		if (character.disabled>0){
+			modifiedPriority +=9999
+		}
+		if (20-character.PER > 0){
+			modifiedPriority += 20-character.PER || 0
+		}
+		if (20-character.WIL > 0){
+			modifiedPriority += 20-character.PER || 0
+		}
+		
+		return modifiedPriority
+	}
 
-	// All possible actions are here (action name and its corresponding func name)
-	return [
-		{
-			"name":"do nothing",
-			"actionFunction" : doNothing,
-			"priorityFunction" : function (character,opponent,action,model) {
-				var modifiedPriority = 0;
-				modifiedPriority = roll.roll("d10").result
-				
-				if (character.disabled>0){
-					modifiedPriority +=9999
-				}
-				if (20-character.PER > 0){
-					modifiedPriority += 20-character.PER || 0
-				}
-				if (20-character.WIL > 0){
-					modifiedPriority += 20-character.PER || 0
-				}
-				
-				return modifiedPriority
-			}
-		},
-		{
-			"name":"attack",
-			"actionFunction" : melee,
-			"priorityFunction" : function (character,opponent,action,model) {
-				var modifiedPriority = 0;
-				modifiedPriority = roll.roll("d10").result
-				if(character.class=="attacker") {
-					modifiedPriority+=50;
-				}
-				
-				modifiedPriority += opponent.disabled*50 || 0
-				modifiedPriority -= character.wounds*15 || 0
-				modifiedPriority += opponent.wounds*15 || 0
-				modifiedPriority += character.STR/10 || 0
-				modifiedPriority += character.STR-opponent.END/5
-				
-				return modifiedPriority
-			}
-		},
-		{
-			"name":"wild attack",
-			"actionFunction" : wildAttack,
-			"priorityFunction" : function (character,opponent,action,model) {
+function meleePriority(character,opponent,action,model) {
+	var modifiedPriority = 0;
+	modifiedPriority = roll.roll("d10").result
+	if(character.class=="attacker") {
+		modifiedPriority+=50;
+	}
+	
+	modifiedPriority += opponent.disabled*50 || 0
+	modifiedPriority -= character.wounds*15 || 0
+	modifiedPriority += opponent.wounds*15 || 0
+	modifiedPriority += character.STR/10 || 0
+	modifiedPriority += character.STR-opponent.END/5
+	
+	return modifiedPriority
+}	
+
+function wildAttackPriority(character,opponent,action,model) {
 				var modifiedPriority = 0;
 				modifiedPriority = roll.roll("d10").result
 				if(character.class=="attacker") {
@@ -144,35 +128,30 @@ module.exports = {getAllActions : function() {
 				modifiedPriority += character.STR-opponent.END/5 || 0
 				return modifiedPriority
 			}
-		},
-		{
-			"name":"sneak",
-			"actionFunction" : sneak,
-			"priorityFunction" : function (character,opponent,action,model) {
-				var modifiedPriority = 0;
-				modifiedPriority = roll.roll("d10").result
-				if (character.class=="sneaker")  {
-					modifiedPriority+=50;
-				}
-				if (model.rounds==0)  {
-					modifiedPriority+=60;
-				}
-				if (model.rounds>0 && character==model.playerCharacters[0] && opponent.disabled<1)  {// if not first round character can't sneak but mobs can
-				// if monster is disabled then player can try to sneak past it
-					modifiedPriority-=999;
-				}
-				modifiedPriority += opponent.disabled*50
-				modifiedPriority += character.wounds*15 || 0
-				modifiedPriority += character.AGI/10 || 0
-				modifiedPriority += (character.PER - opponent.PER) /10
-				
-				return modifiedPriority
-			}
-		},
-		{
-			"name":"cast Illusion",
-			"actionFunction" : castIllusion,
-			"priorityFunction" : function (character,opponent,action,model) {
+			
+			
+function sneakPriority(character,opponent,action,model) {
+	var modifiedPriority = 0;
+	modifiedPriority = roll.roll("d10").result
+	if (character.class=="sneaker")  {
+		modifiedPriority+=50;
+	}
+	if (model.rounds==0)  {
+		modifiedPriority+=60;
+	}
+	if (model.rounds>0 && character==model.playerCharacters[0] && opponent.disabled<1)  {// if not first round character can't sneak but mobs can
+	// if monster is disabled then player can try to sneak past it
+		modifiedPriority-=999;
+	}
+	modifiedPriority += opponent.disabled*50
+	modifiedPriority += character.wounds*15 || 0
+	modifiedPriority += character.AGI/10 || 0
+	modifiedPriority += (character.PER - opponent.PER) /10
+	
+	return modifiedPriority
+}
+
+function castIllusionPriority (character,opponent,action,model) {
 				var modifiedPriority = 0;
 				modifiedPriority = roll.roll("d10").result
 				if(character.class=="Wizz") {
@@ -186,11 +165,9 @@ module.exports = {getAllActions : function() {
 				
 				return modifiedPriority
 			}
-		},
-		{
-			"name":"cast LifeSkin",
-			"actionFunction" : castLifeSkin,
-			"priorityFunction" : function (character,opponent,action,model) {
+			
+			
+function castLifeSkinPriority (character,opponent,action,model) {
 				var modifiedPriority = 0;
 				modifiedPriority = roll.roll("d10").result
 				if(character.class=="Wizz") {
@@ -204,6 +181,42 @@ module.exports = {getAllActions : function() {
 				
 				return modifiedPriority
 			}
+			
+// =============== AI Decision Making Logic and Action Choosing =====================
+			
+module.exports = {getAllActions : function() {		
+
+	// All possible actions are here (action name and its corresponding func name)
+	return [
+		{
+			"name":"do nothing",
+			"actionFunction" : doNothing,
+			"priorityFunction" : doNothingPriority
+		},
+		{
+			"name":"attack",
+			"actionFunction" : melee,
+			"priorityFunction" : meleePriority
+		},
+		{
+			"name":"wild attack",
+			"actionFunction" : wildAttack,
+			"priorityFunction" : wildAttackPriority
+		},
+		{
+			"name":"sneak",
+			"actionFunction" : sneak,
+			"priorityFunction" : sneakPriority
+		},
+		{
+			"name":"cast Illusion",
+			"actionFunction" : castIllusion,
+			"priorityFunction" : castIllusionPriority
+		},
+		{
+			"name":"cast LifeSkin",
+			"actionFunction" : castLifeSkin,
+			"priorityFunction" : castLifeSkinPriority
 		}
 	]
 

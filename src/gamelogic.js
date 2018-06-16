@@ -98,7 +98,7 @@ function tickMainCharacter(model) {
 			display(ch.name +"'s ACTION: "+chActions[0]["name"])
 			display("--------")
 
-			chActions[0]["actionFunction"](ch,monster);
+			chActions[0]["actionFunction"](ch,monster,model);
 
 			monsterActions = monsterActions.sort(function(a,b){
 				return b.priority-a.priority;
@@ -108,7 +108,7 @@ function tickMainCharacter(model) {
 			display(monster.name +"'s ACTION: "+monsterActions[0]["name"])
 			display("--------")
 
-			if(!calculations.checkIfDead(monster)) monsterActions[0]["actionFunction"](monster,ch);
+			if(!calculations.checkIfDead(monster)) monsterActions[0]["actionFunction"](monster,ch,model);
 			
 			sleep(3)
 			console.verbose("")
