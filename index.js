@@ -13,10 +13,10 @@ console.verbose = function() {
 }
 
 
-lastRequest = "";
+lastRequest = [];
 display = function(){
 	console.log.apply(null,arguments);
-	lastRequest+=JSON.stringify(arguments);
+	lastRequest.push(JSON.stringify(arguments));
 }
 
 
@@ -173,7 +173,7 @@ var bodyParser = require('body-parser');
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+app.use(express.static('client'))
 var port = process.env.PORT || 8080;        // set our port
 
 // ROUTES FOR OUR API
@@ -220,7 +220,7 @@ router.post('/createCharacter', function(req, res) {
 });
 
 router.get('/tick', function(req, res) {
-    lastRequest = "";
+    lastRequest = [];
     if(isMainCharacterAlive()) {
       model = logicLibrary.tickMainCharacter(model);
       res.json({ message: lastRequest, "model": model})

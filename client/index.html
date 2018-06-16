@@ -1,0 +1,85 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+        <meta name="description" content=""> 
+        <meta name="author" content=""> 
+        <title>Blank Template for Bootstrap</title>         
+        <!-- Bootstrap core CSS -->         
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet"> 
+        <!-- Custom styles for this template -->         
+        <link href="style.css" rel="stylesheet"> 
+    </head>     
+    <body> 
+        <nav class="navbar navbar-expand-lg navbar-light bg-light"> 
+            <a class="navbar-brand" href="#">HeroMaker</a> 
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler55" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation"> 
+                <span class="navbar-toggler-icon"></span> 
+            </button>             
+            <div class="collapse navbar-collapse" id="navbarToggler55"> 
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0"> 
+                    <li class="nav-item active"> 
+</li>                     
+                    <li class="nav-item"> 
+</li>                     
+                    <li class="nav-item"> 
+</li>                     
+                    <li class="nav-item dropdown"> 
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"> 
+                            <a class="dropdown-item" href="#">Action</a> 
+                            <a class="dropdown-item" href="#">Another action</a> 
+                            <a class="dropdown-item" href="#">Something else here</a> 
+                        </div>                         
+                    </li>                     
+                </ul>                 
+                <form class="form-inline my-2 my-lg-0"> 
+</form>                 
+            </div>             
+        </nav>         
+        <div class="container" id="app"> 
+            <div class="row"> 
+                <div class="col-md-12"> 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Hero</h6>
+                            <pre class="form-control" style="height: 30vh">{{data.model.playerCharacters[0]}}</pre> 
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Monster</h6>
+                            <pre class="form-control" style="height: 30vh">{{data.model.world[data.model.playerCharacters[0].currentRoom].Monster}}<br></pre> 
+                        </div>
+                    </div>                     
+
+                    <div class="form-control" style="height: 30vh;overflow-y:scroll" id='history'>
+                        <span v-for="message in data.messageHistory">{{message}}<br></span>
+                    </div>                     
+
+                    <div class="row">
+                        <div class="col-md-6"> 
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="restart" v-on:click="createCharacter">Create Random Character</button>                             
+                        </div>
+                        <div class="col-md-6">
+                            <button id="submit" class="btn btn-primary float-right" style="Width:90px" v-on:click="nextTick">Tick</button>                             
+                            <div class="form-check float-right pr-2 pt-1"> 
+                                <input class="form-check-input" type="checkbox" id="formInput23" value="option1"> 
+                                <label class="form-check-label" for="formInput23">                        Autotick                    </label>                                 
+                            </div>
+                        </div>
+                    </div>                     
+                </div>                 
+            </div>             
+        </div>         
+        <!-- Bootstrap core JavaScript
+    ================================================== -->         
+        <!-- Placed at the end of the document so the pages load faster -->         
+        <script src="assets/js/jquery.min.js"></script>         
+        <script src="assets/js/popper.js"></script>         
+        <script src="bootstrap/js/bootstrap.min.js"></script>         
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->         
+        <script src="assets/js/ie10-viewport-bug-workaround.js"></script>         
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="main.js"></script>
+    </body>     
+</html>
