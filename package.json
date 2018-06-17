@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node index2.js verbose",
     "play": "node index2.js",
-    "serve": "node ./node_modules/nodemon/bin/nodemon.js index.js"
+    "serve": "node ./node_modules/nodemon/bin/nodemon.js index.js",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
