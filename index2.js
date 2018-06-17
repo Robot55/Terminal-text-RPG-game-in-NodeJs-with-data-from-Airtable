@@ -228,12 +228,10 @@ function mainCreateCharacterDieLoop() {
 	
 		while(isMainCharacterAlive()) {
 			console.verbose("")
-			console.verbose("==========")
+			console.verbose("............................")
 			console.verbose(" Playing tick frame #"+model.framesTicked);
-			console.verbose("==========")
-			display("");
-			display("...");
-			display("");
+			console.verbose("............................")
+			display("(tick)");
 			model = logicLibrary.tickMainCharacter(model);
 			sleep(1);
 		}

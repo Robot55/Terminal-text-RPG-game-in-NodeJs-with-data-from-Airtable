@@ -46,7 +46,12 @@ function tickMainCharacter(model) {
 		
 		//Actually display contextual ENCOUNTER MESSAGE
 		contextualText = displayEveryTickMessage()
+		display("")
+		display("==========================================")
+		display("")
 		display (contextualText)
+		display("==========================================")
+		display("")
 	  
 
 		//Dump Json of both player and monster
@@ -123,32 +128,31 @@ function tickMainCharacter(model) {
 				console.verbose("!! ATTN !! " + monster.name + "would have acted now but suffered enough wounds to die")
 			}
 			
-			sleep(3)
+			//sleep(3)
 			console.verbose("-- PRIORITY CALCULATIONS --")
-			console.verbose("    "+ch.name.toUpperCase()+"'s Priorities dump")
+			console.verbose("")
+			console.verbose("    "+ch.name.toUpperCase()+"'s Priorities dump:")
 			console.verbose(chActions)
 			console.verbose("")
-			console.verbose("    "+monster.name.toUpperCase()+"'s Priorities dump")
+			console.verbose("    "+monster.name.toUpperCase()+"'s Priorities dump:")
 			console.verbose(monsterActions)
 			console.verbose("")
-			sleep(3)
+			//sleep(3)
 
 
 			function ifPlayerIsDead(){	
-				console.verbose("checking to see if player is dead")
+				console.verbose("DEATH CHECK: "+ch.name)
 				if (calculations.checkIfDead(ch)){
-					display("")
-					display("xXx")
-					display(ch.name + " has died")
-					display("xXx")
+					console.verbose("    "+ch.name + " is dead")
 					model.world[ch.currentRoom].tombstone = ch;
+					console.verbose("    creating Tombstone")
 					ch.causeOfDeath = monster.name;
 					ch.placeOfDeath = model.world[ch.currentRoom].name;
+					console.verbose("    setting Player Alive flag to false")
 					ch.alive = false;
 					model.rounds=0
 				} else {
-					console.verbose("")
-					console.verbose (ch.name + " is alive")
+					console.verbose ("    "+ch.name + " is alive")
 				}
 			}
 			
@@ -156,15 +160,12 @@ function tickMainCharacter(model) {
 				console.verbose("checking to see if monster is dead")
 
 				if ( calculations.checkIfDead(monster)){ // if monster died
-					display("")
-					display("xXx")
-					display (monster.name + " has died from " +monster.wounds + " wounds")
-					display("xXx")
+					console.verbose("    "+monster.name + " is dead")
+					display (monster.name + " was KILLED from " +monster.wounds + " wounds")
 					sleep(1)
 					model.world[ch.currentRoom].Monster = false;
 				}  else {
-					console.verbose("")
-					console.verbose (monster.name + " is alive")
+					console.verbose ("    "+monster.name + " is alive")
 				}
 				
 				if(model.rounds!=undefined){
@@ -183,7 +184,9 @@ function tickMainCharacter(model) {
 		//console.verbose("End of Dave's place")
 		model.playerCharacters[0] = ch;
 		console.verbose("")
+		console.verbose("PLAYER STATUS at end of Tick:")
 		console.verbose(model.playerCharacters[0]);
+		console.verbose("")
 	} else {
 		// no monsters in the room
 		// this is where you could get loot
