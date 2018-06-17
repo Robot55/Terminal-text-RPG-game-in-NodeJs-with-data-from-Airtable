@@ -27,7 +27,7 @@ module.exports = {
 		}
 	},
 
-	basicMeleeToHitRoll: function  (attacker,defender,meleeHandycap){
+	basicMeleeToHitRoll: function  (attacker,defender,meleeHandicap){
 		console.verbose("MELEE HIT ROLL:")
 		console.verbose("    "+attacker.name + " is attacking " + defender.name)
 		//ATTACKER base roll
@@ -40,7 +40,7 @@ module.exports = {
 		attackerModifiers -= attacker.wounds*8 || 0 //wounded effects
 		//calc final attacker modified results
 		levelRangeModifier = 10*(attacker.level-defender.level)
-		attackerModifiedRoll = baseAtkRoll + attackerModifiers - meleeHandycap + levelRangeModifier
+		attackerModifiedRoll = baseAtkRoll + attackerModifiers - meleeHandicap + levelRangeModifier
 		//DEFENDER modified roll
 		baseDefRoll = roll.roll("d100").result
 		defenderModifiers = 0
@@ -52,8 +52,8 @@ module.exports = {
 		//calc final defender modified results
 		defenderModifiedRoll = baseDefRoll + defenderModifiers
 		
-		console.verbose("    Attacker: "+attackerModifiedRoll+" [ roll:" + baseAtkRoll + " + modifiers:" + attackerModifiers + " - handicap:" + meleeHandycap + " +/- lvl gap:" + levelRangeModifier + " ]")
-		console.verbose("    Defender: "+defenderModifiedRoll+" [ roll:" + baseDefRoll + " + modifiers:" + defenderModifiers+ " ]")
+		console.verbose("    Attacker: "+attackerModifiedRoll+" [ roll:(" + baseAtkRoll + ") + modifiers:(" + attackerModifiers + ") - handicap:(" + meleeHandicap + ") + lvl gap:(" + levelRangeModifier + ") ]")
+		console.verbose("    Defender: "+defenderModifiedRoll+" [ roll:(" + baseDefRoll + ") + modifiers:(" + defenderModifiers+ ") ]")
 		
 		if (attacker.surpriseModifier != 0)	{
 			attacker.surpriseModifier = 0
@@ -70,7 +70,7 @@ module.exports = {
 		
 
 	},
-	basicMagicToHitRoll: function  (attacker,defender,magicHandycap){
+	basicMagicToHitRoll: function  (attacker,defender,magicHandiCap){
 		console.verbose("MAGIC HIT ROLL:")
 		console.verbose("    "+attacker.name + " is casting on " + defender.name)
 		//ATTACKER base roll
@@ -83,7 +83,7 @@ module.exports = {
 		attackerModifiers -= attacker.wounds*8 || 0 //wounded effects
 		//calc final attacker modified results
 		levelRangeModifier = 10*(attacker.level-defender.level)
-		attackerModifiedRoll = baseAtkRoll + attackerModifiers - magicHandycap + levelRangeModifier
+		attackerModifiedRoll = baseAtkRoll + attackerModifiers - magicHandiCap + levelRangeModifier
 		//DEFENDER modified roll
 		baseDefRoll = roll.roll("d100").result
 		defenderModifiers = 0
@@ -96,9 +96,9 @@ module.exports = {
 		
 		defenderModifiedRoll = baseDefRoll + defenderModifiers
 		
-		console.verbose("    Caster: "+attackerModifiedRoll+" [ roll:" + baseAtkRoll + " + modifiers:" + attackerModifiers + " - handicap:" + magicHandycap + " +/- lvl gap:" + levelRangeModifier + " ]")
+		console.verbose("    Caster: "+attackerModifiedRoll+" [ roll:(" + baseAtkRoll + ") + modifiers:(" + attackerModifiers + ") - handicap:(" + magicHandiCap + ") + lvl gap:(" + levelRangeModifier + ") ]")
 		
-		console.verbose("    Defender: "+defenderModifiedRoll+" [ roll:" + baseDefRoll + " + modifiers:" + defenderModifiers+ " ]")
+		console.verbose("    Defender: "+defenderModifiedRoll+" [ roll:(" + baseDefRoll + ") + modifiers:(" + defenderModifiers+ ") ]")
 		
 		if (attacker.surpriseModifier != 0)	{
 			attacker.surpriseModifier = 0
