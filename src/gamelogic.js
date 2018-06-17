@@ -108,9 +108,9 @@ function tickMainCharacter(model) {
 				return b.priority-a.priority;
 			})
 			display("")
-			display("--------")
+			display("--------------------------")
 			display(ch.name +"'s ACTION: "+chActions[0]["name"])
-			display("--------")
+			display("--------------------------")
 
 			chActions[0]["actionFunction"](ch,monster,model); //Execute character action
 
@@ -118,9 +118,9 @@ function tickMainCharacter(model) {
 				return b.priority-a.priority;
 			})
 			display("")
-			display("--------")
+			display("--------------------------")
 			display(monster.name +"'s ACTION: "+monsterActions[0]["name"])
-			display("--------")
+			display("--------------------------")
 
 			if(!calculations.checkIfDead(monster)){ //if monster didn't suffer enough wounds to die from character action
 			monsterActions[0]["actionFunction"](monster,ch,model); //Execute monster action
@@ -147,7 +147,7 @@ function tickMainCharacter(model) {
 					model.world[ch.currentRoom].tombstone = ch;
 					console.verbose("    creating Tombstone")
 					ch.causeOfDeath = monster.name;
-					ch.placeOfDeath = model.world[ch.currentRoom].name;
+					ch.placeOfDeath = model.world[ch.currentRoom["Room Description"]];
 					console.verbose("    setting Player Alive flag to false")
 					ch.alive = false;
 					model.rounds=0

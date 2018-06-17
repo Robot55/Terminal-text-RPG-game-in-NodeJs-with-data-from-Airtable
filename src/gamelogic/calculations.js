@@ -23,7 +23,7 @@ module.exports = {
 			someoneElse.surpriseModifier=10;
 		} else {
 			console.verbose("    Neither side managed to SURPRISE the other")
-			display(someone.name + "and "+someoneElse.name+" see one another" +someoneElse.name)
+			display(someone.name + "and "+someoneElse.name+" face each other")
 		}
 	},
 
