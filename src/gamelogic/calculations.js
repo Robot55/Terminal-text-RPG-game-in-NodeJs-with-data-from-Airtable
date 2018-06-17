@@ -12,8 +12,8 @@ module.exports = {
 		someoneModifiedRoll = roll.roll("d100").result + someone.AGI - someoneElse.PER
 		someoneElseModifiedRoll = roll.roll("d100").result + someoneElse.AGI - someone.PER
 		console.verbose("SURPRISE check:")
-		console.verbose("    "+someone.name + " rolled " + someoneModifiedRoll + "for surprise")
-		console.verbose("    "+someoneElse.name + " rolled " + someoneElseModifiedRoll + "for surprise")
+		console.verbose("    "+someone.name + " rolled " + someoneModifiedRoll + " for surprise")
+		console.verbose("    "+someoneElse.name + " rolled " + someoneElseModifiedRoll + " for surprise")
 
 		if (someoneModifiedRoll - someoneElseModifiedRoll > 25) {
 			display(someone.name + " managed to SURPRISE the " +someoneElse.name)
@@ -23,25 +23,37 @@ module.exports = {
 			someoneElse.surpriseModifier=10;
 		} else {
 			console.verbose("    Neither side managed to SURPRISE the other")
-			display(someone.name + "and "+someoneElse+" see one another" +someoneElse.name)
+			display(someone.name + "and "+someoneElse.name+" see one another" +someoneElse.name)
 		}
 	},
 
 	basicMeleeToHitRoll: function  (attacker,defender,meleeHandycap){
 		console.verbose("MELEE HIT ROLL:")
 		console.verbose("    "+attacker.name + " is attacking " + defender.name)
-		//attacker modified roll
-		attackerModifiedRoll = roll.roll("d100").result + Math.max(attacker.STR, attacker.AGI, 10) + attacker.surpriseModifier;
-		attackerModifiedRoll -= attacker.wounds*8 || 0
-		attackerModifiedRoll -= meleeHandycap || 0
-		//defender modified roll
-		defenderModifiedRoll = roll.roll("d100").result + defender.AGI;
-		defenderModifiedRoll -= defender.wounds*8 || 0
-		defenderModifiedRoll -= (defender.disabled > 0 ? 100 : 0) // -100 to defender if disabled
+		//ATTACKER base roll
+		baseAtkRoll = roll.roll("d100").result
+		attackerModifiers = 0
+		//adding presumably positive modifiers
+		attackerModifiers += Math.max(attacker.STR, attacker.AGI, 10) // best of STR or AGI added
+		attackerModifiers += attacker.surpriseModifier; // adding surprise modifier
+		//subtracting presumingly negative modifies
+		attackerModifiers -= attacker.wounds*8 || 0 //wounded effects
+		//calc final attacker modified results
+		levelRangeModifier = 10*(attacker.level-defender.level)
+		attackerModifiedRoll = baseAtkRoll + attackerModifiers - meleeHandycap + levelRangeModifier
+		//DEFENDER modified roll
+		baseDefRoll = roll.roll("d100").result
+		defenderModifiers = 0
+		//adding presumably positive modifiers
+		defenderModifiers +=defender.AGI;
+		//subtracting presumingly negative modifies
+		defenderModifiers -= defender.wounds*8 || 0
+		defenderModifiers -= (defender.disabled > 0 ? defender.AGI+25 : 0) // -lose AGI bonus+25 disabled
+		//calc final defender modified results
+		defenderModifiedRoll = baseDefRoll + defenderModifiers
 		
-		console.verbose("    "+attacker.name+"'s NATURAL attack bonus is: "+ Math.max(attacker.STR, attacker.AGI, 10).toString())
-		console.verbose("    "+attacker.name+"'s modified ATTACK roll: " + attackerModifiedRoll)
-		console.verbose("    "+defender.name+"'s modified DEFENSE roll: " + defenderModifiedRoll)
+		console.verbose("    Attacker: "+attackerModifiedRoll+" [ roll:" + baseAtkRoll + " + modifiers:" + attackerModifiers + " - handicap:" + meleeHandycap + " +/- lvl gap:" + levelRangeModifier + " ]")
+		console.verbose("    Defender: "+defenderModifiedRoll+" [ roll:" + baseDefRoll + " + modifiers:" + defenderModifiers+ " ]")
 		
 		if (attacker.surpriseModifier != 0)	{
 			attacker.surpriseModifier = 0
@@ -53,7 +65,52 @@ module.exports = {
 		} else {
 			return "miss"	
 		}
+	
 
+		
+
+	},
+	basicMagicToHitRoll: function  (attacker,defender,magicHandycap){
+		console.verbose("MAGIC HIT ROLL:")
+		console.verbose("    "+attacker.name + " is casting on " + defender.name)
+		//ATTACKER base roll
+		baseAtkRoll = roll.roll("d100").result
+		attackerModifiers = 0
+		//adding presumably positive modifiers
+		attackerModifiers += attacker.INT
+		attackerModifiers += attacker.surpriseModifier; // adding surprise modifier
+		//subtracting presumingly negative modifies
+		attackerModifiers -= attacker.wounds*8 || 0 //wounded effects
+		//calc final attacker modified results
+		levelRangeModifier = 10*(attacker.level-defender.level)
+		attackerModifiedRoll = baseAtkRoll + attackerModifiers - magicHandycap + levelRangeModifier
+		//DEFENDER modified roll
+		baseDefRoll = roll.roll("d100").result
+		defenderModifiers = 0
+		//adding presumably positive modifiers
+		defenderModifiers +=defender.WIL;
+		//subtracting presumingly negative modifies
+	
+		
+		//calc final defender modified results
+		
+		defenderModifiedRoll = baseDefRoll + defenderModifiers
+		
+		console.verbose("    Caster: "+attackerModifiedRoll+" [ roll:" + baseAtkRoll + " + modifiers:" + attackerModifiers + " - handicap:" + magicHandycap + " +/- lvl gap:" + levelRangeModifier + " ]")
+		
+		console.verbose("    Defender: "+defenderModifiedRoll+" [ roll:" + baseDefRoll + " + modifiers:" + defenderModifiers+ " ]")
+		
+		if (attacker.surpriseModifier != 0)	{
+			attacker.surpriseModifier = 0
+			console.verbose ("    "+attacker.name + "'s surprise modifier was used and will be set to 0 now")
+		}
+
+		if (attackerModifiedRoll > defenderModifiedRoll) {
+			return "hit"
+		} else {
+			return "miss"	
+		}
+	
 
 		
 

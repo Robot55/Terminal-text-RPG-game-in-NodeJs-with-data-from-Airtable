@@ -65,30 +65,46 @@ function sneak(attemptor,target,model) { 	// can be done on first round or when 
 }
 
 function castIllusion(attemptor,target,model) {
+	attemptor.mana--
+	
+	handicap = -1
+	handicap += Math.floor(target.PER/10) || 0
+	handicap += Math.floor(target.INT/10) || 0
+	casterAttackRoll = calculations.basicMagicToHitRoll(attemptor, target, handicap)
 	//check if succeed
-	// if so do:
-	if (attemptor == model.playerCharacters[0]){ // if attemptor is player character
-		//move to next room and set rounds to 0
-		model.playerCharacters[0].currentRoom+=1;
-		model.rounds=0
-	} else { //if attemptor is monster
-		target.disabled=target.disabled==undefined ? 2 : target.disabled+2
+	if (casterAttackRoll=="hit"){
+		if (attemptor == model.playerCharacters[0]){ // if attemptor is player character
+			//move to next room and set rounds to 0
+			model.playerCharacters[0].currentRoom+=1;
+			model.rounds=0
+		} else { //if attemptor is monster
+			target.disabled=target.disabled==undefined ? 2 : target.disabled+2
+		}
+
+	display(attemptor.name + " cast ILLUSION on" + target.name + "and is free to move to the next room")
+		
+	} else {
+		display(attemptor.name + " FAILS to cast an Illusion spell")
 	}
-	display("")
-	display(attemptor.name + "is casting Illusion")
+
 	
 }
 
 function castLifeSkin(attemptor,target,model) {
-	//check if succeed
-	// if so do:
-	console.verbose("starting lifeSkin calculations...")
-	dieRoll = roll.roll("d2").result
-	attemptor.wounds-= dieRoll
-	console.verbose(attemptor.name + " rolled: " + dieRoll + "wounds to heal and now have: " + attemptor.wounds + " wounds")
-	txt = attemptor.wounds >= 0 ? " was healed for " + dieRoll +" wounds" : " was fully healed and gained " + attemptor.wounds*-1 + " point(s) of magical armor"
-	display("")
-	display(attemptor.name + " cast LifeSkin and" + txt)
+	attemptor.mana--
+	handicap = -1*(attemptor.WIL+33)
+	// self spell so handicap is negative (means Easy)
+	casterAttackRoll = calculations.basicMagicToHitRoll(attemptor, attemptor, handicap) // attemptor is both attacker and defender
+	console.verbose("    starting lifeSkin calculations...")
+	if (casterAttackRoll=="hit"){
+		dieRoll = roll.roll("d2").result
+		attemptor.wounds-= dieRoll
+		console.verbose(attemptor.name + " rolled: " + dieRoll + "wounds to heal and now have: " + attemptor.wounds + " wounds")
+		txt = attemptor.wounds >= 0 ? " was HEALED for " + dieRoll +" wounds" : " was FULLY HEALED and gained " + attemptor.wounds*-1 + " point(s) of magical armor"
+		display(attemptor.name + " cast LifeSkin and" + txt)	
+	} else {
+		display(attemptor.name + " FAILS to cast LifeSkin")
+	}
 	
 }
 
@@ -140,6 +156,7 @@ function wildAttackPriority(character,opponent,action,model) {
 				modifiedPriority += opponent.wounds*15 || 0
 				modifiedPriority += character.STR/10 || 0
 				modifiedPriority += character.STR-opponent.END/5 || 0
+				//modifiedPriority += character.STR-opponent.END>25 ? 20 : 0
 				return modifiedPriority
 			}
 			
@@ -176,7 +193,7 @@ function castIllusionPriority (character,opponent,action,model) {
 				modifiedPriority += character.wounds*15 || 0
 				modifiedPriority -= opponent.wounds*10 || 0
 				modifiedPriority += character.INT/10 || 0
-				
+				modifiedPriority -= character.mana<1 ? 999 : 0
 				return modifiedPriority
 			}
 			
@@ -192,6 +209,7 @@ function castLifeSkinPriority (character,opponent,action,model) {
 				modifiedPriority += character.wounds*30 || 0
 				modifiedPriority -= opponent.wounds*10 || 0
 				modifiedPriority += character.INT/10 || 0
+				modifiedPriority -= character.mana<1 ? 999 : 0
 				
 				return modifiedPriority
 			}
