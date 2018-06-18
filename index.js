@@ -26,7 +26,7 @@ roll = new Roll();
 clear = require('clear');
 clear();
 
-logicLibrary = require('./src/gamelogic.js');
+gamelogic = require('./src/gamelogic.js');
 //
 // Start the prompt
 
@@ -201,7 +201,7 @@ router.post('/createCharacter', function(req, res) {
 router.get('/tick', function(req, res) {
     lastRequest = [];
     if(isMainCharacterAlive()) {
-      model = logicLibrary.tickMainCharacter(model);
+      model = gamelogic.tickMainCharacter(model);
       res.json({ message: lastRequest, "model": model})
     } else {
     	res.json({ message: 'Last Character is dead - create a new one!' });   
