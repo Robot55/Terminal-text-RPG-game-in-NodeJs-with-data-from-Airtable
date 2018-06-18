@@ -11,6 +11,63 @@ var Roll = require('roll'),
 
 
 
+function buildWorld(airtableData) {
+
+	console.log(airtableData)
+
+	function getRandomRoomByLevel(level,airtableData) {
+		
+		var possibleRooms = airtableData["Rooms"].filter(function(room){
+			return (room.level == level)
+		})
+			
+		return possibleRooms[roll.roll("d"+possibleRooms.length).result-1];
+	}
+
+	function getRandomMonsterByLevel(level,airtableData) {
+		
+		var possibleMonsters = airtableData["Monsters"].filter(function(monster){
+			return (monster.level == level)
+		})
+			
+		return possibleMonsters[roll.roll("d"+possibleMonsters.length).result-1];
+	}
+	// generate d6 level 1 rooms
+  var world = []; // a list of rooms
+  var numberOfRooms = 50;//roll.roll('2d6').result;
+  
+  console.verbose("Generating "+numberOfRooms+" rooms")
+  
+  for(var i = 0;i<numberOfRooms;i++) {
+    
+    var hydratedRoom = {}
+    var theroll = roll.roll('1d4').result
+    
+    // first levels handicap
+    if(i<3) {
+    	theroll-=1;
+    }
+    if(i<5) {
+    	theroll-=1;
+    }
+    hydratedRoom = getRandomRoomByLevel(Math.max(1,theroll),airtableData) 
+    while(hydratedRoom==undefined) {
+    	hydratedRoom = getRandomRoomByLevel(1,airtableData) 
+    }
+    
+    // get a monster between max and min level
+    var monsterLevel = hydratedRoom.minMonsterLevel; 
+    var diceRange = hydratedRoom.maxMonsterLevel- hydratedRoom.minMonsterLevel;
+    if(diceRange>0) {
+    	monsterLevel+=roll.roll('d'+diceRange).result 
+    }
+    hydratedRoom["Monster"] = getRandomMonsterByLevel(monsterLevel,airtableData) || getRandomMonsterByLevel(1,);
+    
+  	world.push(hydratedRoom);
+  }
+  return world;
+}
+
 function tickMainCharacter(model) {
 	var ch = model.playerCharacters[0];
 	//initialization of CHAR stats if undefined
@@ -255,5 +312,6 @@ function tickMainCharacter(model) {
 }
 	
 module.exports = {};
+module.exports["buildWorld"] = buildWorld;
 module.exports["tickMainCharacter"] = tickMainCharacter;
 module.exports["characterCreation"] = characterCreation
