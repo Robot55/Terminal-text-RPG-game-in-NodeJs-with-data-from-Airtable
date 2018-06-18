@@ -19,7 +19,7 @@ display = function(){
 	} else {
 	//	sleep(1);
 	}
-	sleep(1)
+	sleep(0.2)
 }
 
 
@@ -227,18 +227,38 @@ function mainCreateCharacterDieLoop() {
 		model.playerCharacters[0].currentRoom = 0;
 	
 		while(isMainCharacterAlive()) {
-			console.verbose("")
+			console.verbose("\u21d4")
 			console.verbose("............................")
 			console.verbose(" Playing tick frame #"+model.framesTicked);
 			console.verbose("............................")
 			display("(tick)");
 			model = logicLibrary.tickMainCharacter(model);
-			sleep(1);
+			sleep(0.5);
 		}
-	 
-		display("The Hero named "+model.playerCharacters[0].name+" is dead!");
-		
+		display("                  _/ /)					")
+		display("                 /\\/ )					")
+		display("                 |/)\)						")
+		display("                  /\_						")
+		display("                  \__|=					")
+		display("                 (    )					")
+		display("                 __)(__					")
+		display("           _____/      \\_____				")
+		display("          |                  ||			")
+		display("          |  _     ___   _   ||			")
+		display("          | | \     |   | \  ||			")
+		display("          | |  |    |   |  | ||			")
+		display("          | |_/     |   |_/  ||			")
+		display("          | | \     |   |    ||			")
+		display("          | |  \    |   |    ||			")
+		display("          | |   \. _|_. | .  ||			")
+		display("          |                  ||			")
+		display("  *       | *   **    * **   |**      **	")
+		display("   \)),,))./.,(//,,..,,\||(,,.,\\,.((//	")	
+		display("")
+		display("x X x  ALAS! The Hero named "+model.playerCharacters[0].name+" is dead!  x X x");
+		display("")
 		display("They join the long list of heroes who sacrificed their lives:")
+		display("")
 		for(var i in model.playerCharacters) {
 		  var pcLevel = model.playerCharacters[i].level;
 			display(model.playerCharacters[i].name+"\t\t\t who died at level \t"+pcLevel+"\tbecause of a  \t"+model.playerCharacters[i].causeOfDeath);
