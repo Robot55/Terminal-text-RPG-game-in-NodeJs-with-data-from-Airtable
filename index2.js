@@ -227,25 +227,25 @@ function mainCreateCharacterDieLoop() {
 		model.playerCharacters[0].currentRoom = 0;
 	
 		while(isMainCharacterAlive()) {
-			console.verbose("\u21d4")
-			console.verbose("............................")
+
+			console.verbose("..........................")
 			console.verbose(" Playing tick frame #"+model.framesTicked);
-			console.verbose("............................")
-			display("(tick)");
+			//console.verbose("............................")
+			display("..........(tick)..........");
 			model = logicLibrary.tickMainCharacter(model);
 			sleep(0.5);
 		}
 		display("                  _/ /)					")
-		display("                 /\\/ )					")
-		display("                 |/)\)						")
-		display("                  /\_						")
-		display("                  \__|=					")
+		display("                 /\\\\/ )					")
+		display("                 |/)\\)						")
+		display("                  /\\_						")
+		display("                  \\__|=					")
 		display("                 (    )					")
 		display("                 __)(__					")
-		display("           _____/      \\_____				")
+		display("           _____/      \\\\_____				")
 		display("          |                  ||			")
 		display("          |  _     ___   _   ||			")
-		display("          | | \     |   | \  ||			")
+		display("          | | \\     |   | \\  ||			")
 		display("          | |  |    |   |  | ||			")
 		display("          | |_/     |   |_/  ||			")
 		display("          | | \     |   |    ||			")
@@ -253,7 +253,7 @@ function mainCreateCharacterDieLoop() {
 		display("          | |   \. _|_. | .  ||			")
 		display("          |                  ||			")
 		display("  *       | *   **    * **   |**      **	")
-		display("   \)),,))./.,(//,,..,,\||(,,.,\\,.((//	")	
+		display("   \\)),,))./.,(//,,..,,\\||(,,.,\\\\,.((//	")	
 		display("")
 		display("x X x  ALAS! The Hero named "+model.playerCharacters[0].name+" is dead!  x X x");
 		display("")

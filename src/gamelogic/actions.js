@@ -50,17 +50,28 @@ function wildAttack(attemptor,target,model) { // more likely to miss but more dm
 
 function sneak(attemptor,target,model) { 	// can be done on first round or when enemy disabled. 
 									//lets player go to next room or monster to disable player for 1 round
-	//check if succeed
-	// if so do:
-	if (attemptor == model.playerCharacters[0]){
-		//move to next room and set rounds to 0
-		model.playerCharacters[0].currentRoom+=1;
-		model.rounds=0
-	} else {
-		target.disabled=target.disabled==undefined ? 1 : target.disabled+1
+	characterSneakRoll = calculations.basicStealthToHitRoll(attemptor, target,0)
+	
+	if (characterSneakRoll=="hit"){ // if attemptor managed to hit target
+
+		if (attemptor == model.playerCharacters[0]){ // if SNEAK atttemptor is Player
+				//move to next room and set rounds to 0
+				display(attemptor.name + " quickly hides and SNEAKS past " + target.name + " to the next room")
+				model.playerCharacters[0].currentRoom+=1;
+				model.rounds=0
+			} else {	//if SNEAK atttemptor is Monster
+				target.disabled=target.disabled==undefined ? 1 : target.disabled+1
+				display(attemptor.name + " quickly VANISHES in a shadow behind a corner and will gain a FREE ACTION round on " + target.name)
+			}
+
+
+
+		
+		
+
+	} else { // if attemptor missed target
+		display(attemptor.name + " FAILS to sneak up on " + target.name)
 	}
-	txt = ""
-	display("sneaking")
 	
 }
 

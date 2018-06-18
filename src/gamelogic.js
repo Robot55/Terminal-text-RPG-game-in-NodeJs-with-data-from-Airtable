@@ -46,12 +46,32 @@ function tickMainCharacter(model) {
 		
 		//Actually display contextual ENCOUNTER MESSAGE
 		contextualText = displayEveryTickMessage()
+		//display("")
+		//display("==========================================")
 		display("")
-		display("==========================================")
-		display("")
+		if (contextualText.includes("NEW ROOM")) {
+		display("	     _I_													")
+	    display("           .~'_`~.												")
+	    display("     /(  ,^ .~ ~. ^.  )\\										")
+	    display("     \\ \\/ .^ |   ^. \\/ /									")
+	    display("      Y  /   |     \\  Y            ___.oOo.___ 				")
+	    display("      | Y    |      Y |           |           |				")
+	    display("      | |    |      | |           |   N E W   |				")
+	    display("      | |   _|___   | |           |           |				")
+	    display("      | |  /____/|  | |           |  R O O M  |				")
+	    display("      |.| |   __/|__|.|           |           |				")
+	    display("      |.| |   __/|  |.|          _|___________|_ 				")
+	    display("      |:| |   __//  |:|         '^^^^^^^^^^^^^^^`				")
+	    display("      |:| |_____/   |:|										")
+	    display("  ____|_|/          |_|_____________________________ 			")
+	    display("  ____]H[           ]H[_____________________________ 			")
+	    display("       /             \\ 										")
+		}
 		display (contextualText)
-		display("==========================================")
+		//display("==========================================")
+		sleep(1)
 		display("")
+
 	  
 
 		//Dump Json of both player and monster
@@ -198,10 +218,24 @@ function tickMainCharacter(model) {
 			// you finished the dungeon!
 			clear();
 			model.rounds=undefined
+
+			display("                       /^\             ")
+			display("                       | |             ")
+			display("                       |-|             ")
+			display("                  /^\  | |             ")
+			display("           /^\  / [_] \+-+             ")
+			display("          |---||-------| |             ")
+			display(" _/^\_    _/^\_|  [_]  |_/^\_   _/^\_  ")
+			display(" |___|    |___||_______||___|   |___|  ")
+			display("  | |======| |===========| |=====| |   ")
+			display("  | |      | |    /^\    | |     | |   ")
+			display("  | |      | |   |   |   | |     | |   ")
+			display("  |_|______|_|__ |   |___|_|_____|_|   ")
+
 			display("")
-			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-			display("$ You won the game! all monsters are dead! $");
-			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			display("$ Congratulations! You Conquered the castle! $");
+			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 			display("")
 			display("Your history: ");
 			display(model.playerCharacters);
