@@ -11,6 +11,63 @@ var Roll = require('roll'),
 
 
 
+function buildWorld(airtableData) {
+
+	console.log(airtableData)
+
+	function getRandomRoomByLevel(level,airtableData) {
+		
+		var possibleRooms = airtableData["Rooms"].filter(function(room){
+			return (room.level == level)
+		})
+			
+		return possibleRooms[roll.roll("d"+possibleRooms.length).result-1];
+	}
+
+	function getRandomMonsterByLevel(level,airtableData) {
+		
+		var possibleMonsters = airtableData["Monsters"].filter(function(monster){
+			return (monster.level == level)
+		})
+			
+		return possibleMonsters[roll.roll("d"+possibleMonsters.length).result-1];
+	}
+	// generate d6 level 1 rooms
+  var world = []; // a list of rooms
+  var numberOfRooms = 50;//roll.roll('2d6').result;
+  
+  console.verbose("Generating "+numberOfRooms+" rooms")
+  
+  for(var i = 0;i<numberOfRooms;i++) {
+    
+    var hydratedRoom = {}
+    var theroll = roll.roll('1d4').result
+    
+    // first levels handicap
+    if(i<3) {
+    	theroll-=1;
+    }
+    if(i<5) {
+    	theroll-=1;
+    }
+    hydratedRoom = getRandomRoomByLevel(Math.max(1,theroll),airtableData) 
+    while(hydratedRoom==undefined) {
+    	hydratedRoom = getRandomRoomByLevel(1,airtableData) 
+    }
+    
+    // get a monster between max and min level
+    var monsterLevel = hydratedRoom.minMonsterLevel; 
+    var diceRange = hydratedRoom.maxMonsterLevel- hydratedRoom.minMonsterLevel;
+    if(diceRange>0) {
+    	monsterLevel+=roll.roll('d'+diceRange).result 
+    }
+    hydratedRoom["Monster"] = getRandomMonsterByLevel(monsterLevel,airtableData) || getRandomMonsterByLevel(1,);
+    
+  	world.push(hydratedRoom);
+  }
+  return world;
+}
+
 function tickMainCharacter(model) {
 	var ch = model.playerCharacters[0];
 	//initialization of CHAR stats if undefined
@@ -46,12 +103,32 @@ function tickMainCharacter(model) {
 		
 		//Actually display contextual ENCOUNTER MESSAGE
 		contextualText = displayEveryTickMessage()
+		//display("")
+		//display("==========================================")
 		display("")
-		display("==========================================")
-		display("")
+		if (contextualText.includes("NEW ROOM")) {
+		display("	     _I_													")
+	    display("           .~'_`~.												")
+	    display("     /(  ,^ .~ ~. ^.  )\\										")
+	    display("     \\ \\/ .^ |   ^. \\/ /									")
+	    display("      Y  /   |     \\  Y            ___.oOo.___ 				")
+	    display("      | Y    |      Y |           |           |				")
+	    display("      | |    |      | |           |   N E W   |				")
+	    display("      | |   _|___   | |           |           |				")
+	    display("      | |  /____/|  | |           |  R O O M  |				")
+	    display("      |.| |   __/|__|.|           |           |				")
+	    display("      |.| |   __/|  |.|          _|___________|_ 				")
+	    display("      |:| |   __//  |:|         '^^^^^^^^^^^^^^^`				")
+	    display("      |:| |_____/   |:|										")
+	    display("  ____|_|/          |_|_____________________________ 			")
+	    display("  ____]H[           ]H[_____________________________ 			")
+	    display("       /             \\ 										")
+		}
 		display (contextualText)
-		display("==========================================")
+		//display("==========================================")
+		sleep(1)
 		display("")
+
 	  
 
 		//Dump Json of both player and monster
@@ -198,10 +275,24 @@ function tickMainCharacter(model) {
 			// you finished the dungeon!
 			clear();
 			model.rounds=undefined
+
+			display("                       /^\             ")
+			display("                       | |             ")
+			display("                       |-|             ")
+			display("                  /^\  | |             ")
+			display("           /^\  / [_] \+-+             ")
+			display("          |---||-------| |             ")
+			display(" _/^\_    _/^\_|  [_]  |_/^\_   _/^\_  ")
+			display(" |___|    |___||_______||___|   |___|  ")
+			display("  | |======| |===========| |=====| |   ")
+			display("  | |      | |    /^\    | |     | |   ")
+			display("  | |      | |   |   |   | |     | |   ")
+			display("  |_|______|_|__ |   |___|_|_____|_|   ")
+
 			display("")
-			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-			display("$ You won the game! all monsters are dead! $");
-			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			display("$ Congratulations! You Conquered the castle! $");
+			display("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 			display("")
 			display("Your history: ");
 			display(model.playerCharacters);
@@ -221,5 +312,6 @@ function tickMainCharacter(model) {
 }
 	
 module.exports = {};
+module.exports["buildWorld"] = buildWorld;
 module.exports["tickMainCharacter"] = tickMainCharacter;
 module.exports["characterCreation"] = characterCreation

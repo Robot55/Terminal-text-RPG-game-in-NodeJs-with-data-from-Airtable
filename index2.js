@@ -30,7 +30,7 @@ roll = new Roll();
 clear = require('clear');
 clear();
 
-logicLibrary = require('./src/gamelogic.js');
+gamelogic = require('./src/gamelogic.js');
 //
 // Start the prompt
 
@@ -106,68 +106,13 @@ function loadEntireBaseIntoAirtableData(baseName,onLoaded) {
 }
 
 
-function getRandomRoomByLevel(level) {
-	
-	var possibleRooms = airtableData["Rooms"].filter(function(room){
-		return (room.level == level)
-	})
-		
-	return possibleRooms[roll.roll("d"+possibleRooms.length).result-1];
-}
 
-function getRandomMonsterByLevel(level) {
-	
-	var possibleMonsters = airtableData["Monsters"].filter(function(monster){
-		return (monster.level == level)
-	})
-		
-	return possibleMonsters[roll.roll("d"+possibleMonsters.length).result-1];
-}
-
-
-
-function buildWorld() {
-	// generate d6 level 1 rooms
-  var world = []; // a list of rooms
-  var numberOfRooms = 50;//roll.roll('2d6').result;
-  
-  console.verbose("Generating "+numberOfRooms+" rooms")
-  
-  for(var i = 0;i<numberOfRooms;i++) {
-    
-    var hydratedRoom = {}
-    var theroll = roll.roll('1d4').result
-    
-    // first levels handicap
-    if(i<3) {
-    	theroll-=1;
-    }
-    if(i<5) {
-    	theroll-=1;
-    }
-    hydratedRoom = getRandomRoomByLevel(Math.max(1,theroll)) 
-    while(hydratedRoom==undefined) {
-    	hydratedRoom = getRandomRoomByLevel(1) 
-    }
-    
-    // get a monster between max and min level
-    var monsterLevel = hydratedRoom.minMonsterLevel; 
-    var diceRange = hydratedRoom.maxMonsterLevel- hydratedRoom.minMonsterLevel;
-    if(diceRange>0) {
-    	monsterLevel+=roll.roll('d'+diceRange).result 
-    }
-    hydratedRoom["Monster"] = getRandomMonsterByLevel(monsterLevel) || getRandomMonsterByLevel(1);
-    
-  	world.push(hydratedRoom);
-  }
-  return world;
-}
 
 display("Loading data ... ");
 
 function startCharacterCreation(onFinished) {
 
-	var aNewCharacter = logicLibrary.characterCreation.createANewCharacter();
+	var aNewCharacter = gamelogic.characterCreation.createANewCharacter();
 	return onFinished(aNewCharacter);
 		
 }
@@ -195,7 +140,7 @@ loadEntireBaseIntoAirtableData("Rooms",function(){
 		
 		console.verbose("Building World....");
 		
-		var world = buildWorld(airtableData);
+		var world = gamelogic.buildWorld(airtableData);
 		
 		console.verbose("The World:");
 		console.verbose(world);
@@ -227,25 +172,25 @@ function mainCreateCharacterDieLoop() {
 		model.playerCharacters[0].currentRoom = 0;
 	
 		while(isMainCharacterAlive()) {
-			console.verbose("\u21d4")
-			console.verbose("............................")
+
+			console.verbose("..........................")
 			console.verbose(" Playing tick frame #"+model.framesTicked);
-			console.verbose("............................")
-			display("(tick)");
-			model = logicLibrary.tickMainCharacter(model);
+			//console.verbose("............................")
+			display("..........(tick)..........");
+			model = gamelogic.tickMainCharacter(model);
 			sleep(0.5);
 		}
 		display("                  _/ /)					")
-		display("                 /\\/ )					")
-		display("                 |/)\)						")
-		display("                  /\_						")
-		display("                  \__|=					")
+		display("                 /\\\\/ )					")
+		display("                 |/)\\)						")
+		display("                  /\\_						")
+		display("                  \\__|=					")
 		display("                 (    )					")
 		display("                 __)(__					")
-		display("           _____/      \\_____				")
+		display("           _____/      \\\\_____				")
 		display("          |                  ||			")
 		display("          |  _     ___   _   ||			")
-		display("          | | \     |   | \  ||			")
+		display("          | | \\     |   | \\  ||			")
 		display("          | |  |    |   |  | ||			")
 		display("          | |_/     |   |_/  ||			")
 		display("          | | \     |   |    ||			")
@@ -253,7 +198,7 @@ function mainCreateCharacterDieLoop() {
 		display("          | |   \. _|_. | .  ||			")
 		display("          |                  ||			")
 		display("  *       | *   **    * **   |**      **	")
-		display("   \)),,))./.,(//,,..,,\||(,,.,\\,.((//	")	
+		display("   \\)),,))./.,(//,,..,,\\||(,,.,\\\\,.((//	")	
 		display("")
 		display("x X x  ALAS! The Hero named "+model.playerCharacters[0].name+" is dead!  x X x");
 		display("")

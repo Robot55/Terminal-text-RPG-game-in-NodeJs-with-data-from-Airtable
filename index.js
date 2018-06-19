@@ -26,7 +26,7 @@ roll = new Roll();
 clear = require('clear');
 clear();
 
-logicLibrary = require('./src/gamelogic.js');
+gamelogic = require('./src/gamelogic.js');
 //
 // Start the prompt
 
@@ -104,42 +104,7 @@ function getRandomMonsterByLevel(level) {
 
 
 
-function buildWorld() {
-	// generate d6 level 1 rooms
-  var world = []; // a list of rooms
-  var numberOfRooms = 50;//roll.roll('2d6').result;
-  
-  console.verbose("Generating "+numberOfRooms+" rooms")
-  
-  for(var i = 0;i<numberOfRooms;i++) {
-    
-    var hydratedRoom = {}
-    var theroll = roll.roll('1d4').result
-    
-    // first levels handicap
-    if(i<3) {
-    	theroll-=1;
-    }
-    if(i<5) {
-    	theroll-=1;
-    }
-    hydratedRoom = getRandomRoomByLevel(Math.max(1,theroll)) 
-    while(hydratedRoom==undefined) {
-    	hydratedRoom = getRandomRoomByLevel(1) 
-    }
-    
-    // get a monster between max and min level
-    var monsterLevel = hydratedRoom.minMonsterLevel; 
-    var diceRange = hydratedRoom.maxMonsterLevel- hydratedRoom.minMonsterLevel;
-    if(diceRange>0) {
-    	monsterLevel+=roll.roll('d'+diceRange).result 
-    }
-    hydratedRoom["Monster"] = getRandomMonsterByLevel(monsterLevel) || getRandomMonsterByLevel(1);
-    
-  	world.push(hydratedRoom);
-  }
-  return world;
-}
+
 
 display("Loading data ... ");
 
@@ -201,7 +166,7 @@ router.post('/createCharacter', function(req, res) {
 router.get('/tick', function(req, res) {
     lastRequest = [];
     if(isMainCharacterAlive()) {
-      model = logicLibrary.tickMainCharacter(model);
+      model = gamelogic.tickMainCharacter(model);
       res.json({ message: lastRequest, "model": model})
     } else {
     	res.json({ message: 'Last Character is dead - create a new one!' });   
@@ -229,7 +194,7 @@ loadEntireBaseIntoAirtableData("Rooms",function(){
 		
 		console.verbose("Building World....");
 		
-		var world = buildWorld(airtableData);
+		var world = gamelogic.buildWorld(airtableData);
 		
 		console.verbose("The World:");
 		console.verbose(world);

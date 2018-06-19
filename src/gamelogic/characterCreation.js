@@ -21,12 +21,12 @@ module.exports = {
 		aNewCharacter.name = aNewCharacter.name.replace(/\s+/g,' ').trim(); // ensures just one space between words in name
 		
 		display("Assigning random attributes cause this is just a prototype atm");
-		aNewCharacter.STR = roll.roll("d100").result+9 -50 // comment me out
+		aNewCharacter.STR = roll.roll("d100").result+9 //-50 // comment me out
 		aNewCharacter.PER = roll.roll("d100").result+9;
 		aNewCharacter.END = roll.roll("d100").result+9;
 		aNewCharacter.CHA = roll.roll("d100").result+9 //+50 // comment me out
-		aNewCharacter.INT = roll.roll("d100").result+9 +50 // comment me out
-		aNewCharacter.AGI = roll.roll("d100").result+9 -50 // comment me out
+		aNewCharacter.INT = roll.roll("d100").result+9 // +50 // comment me out
+		aNewCharacter.AGI = roll.roll("d100").result+9 +50 // comment me out
 		aNewCharacter.WIL = roll.roll("d100").result+9 //+50 // comment me out
 
 		//Introducing mana to chars with over 50 INT
