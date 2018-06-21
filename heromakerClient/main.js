@@ -8,6 +8,15 @@ var app = new Vue({
 			"url": "http://www.dnd5eapi.co/api/ability-scores/1"
 		}
     ],
+    character : {
+            abilities:{
+            	"STR": 0,
+            	"DEX": 0,
+            	"CON": 0,
+            	"INT": 0,
+            	"WIS": 0,
+            	"CHA": 0        }
+    },
     selectedAbility: false
   },
   methods: {
@@ -44,17 +53,12 @@ var app = new Vue({
     abilityRaise: function (ability){
     	console.log("plus one to: "+ability.name)
     	app.character.abilities[ability.name]++;
+
     },
 
     abilityLower: function (ability){
     	console.log("minus one to: "+ability.name)
     	app.character.abilities[ability.name]--;
-    },
-
-    createBlankCharacter: function (){
-    	app.character = {
-    		abilities:{}
-    	}
     }
 
 
@@ -64,6 +68,5 @@ var app = new Vue({
 })
 
 $( document ).ready(function() {
-    app.createBlankCharacter ();
     app.getAbilities ();
 });
