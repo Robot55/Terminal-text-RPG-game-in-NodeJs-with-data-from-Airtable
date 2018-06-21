@@ -29,19 +29,19 @@
             <div class="row" id="app">
                 <div class="col-md-6">
                     <div class="row" v-for="ability in abilities" v-on:click="selectAbility(ability)">
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-sm-4 col-2">
                             <p>{{ability.name}}</p>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 col-sm-3 col-3">
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <button type="button" class="btn btn-secondary">+</button>
                                 <button type="button" class="btn btn-secondary">-</button>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 col-sm-2 col-3">
                             <p>{{character.abilities[ability.name]}}</p>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 col-sm-2 col-3">
                             <p>18</p>
                         </div>
                     </div>
