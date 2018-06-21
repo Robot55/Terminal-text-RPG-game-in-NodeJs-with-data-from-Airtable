@@ -24,7 +24,7 @@
                 <h2 class="text-center text-sm-center text-lg-center text-xl-center">Race</h2>
             </div>
             <div class="row">
-                <h2 class="text-center text-sm-center text-lg-center text-xl-center">Gender</h2>
+                <h2 class="text-center text-sm-center text-lg-center text-xl-center">Abilities</h2>
             </div>
             <div class="row" id="app">
                 <div class="col-md-6">
@@ -34,11 +34,11 @@
                         </div>
                         <div class="col-md-2 col-sm-3 col-3">
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-secondary">+</button>
-                                <button type="button" class="btn btn-secondary">-</button>
+                                <button type="button" class="btn btn-secondary" v-on:click="abilityRaise(ability)">+</button>
+                                <button type="button" class="btn btn-secondary" v-on:click="abilityLower(ability)">-</button>
                             </div>
                         </div>
-                        <div class="col-md-2 col-sm-2 col-3">
+                        <div class="col-3 col-lg-3 col-sm-3 col-md-3">
                             <p>{{character.abilities[ability.name]}}</p>
                         </div>
                         <div class="col-md-2 col-sm-2 col-3">

@@ -41,6 +41,16 @@ var app = new Vue({
     	app.selectedAbility=ability
     },
 
+    abilityRaise: function (ability){
+    	console.log("plus one to: "+ability.name)
+    	app.character.abilities[ability.name]++;
+    },
+
+    abilityLower: function (ability){
+    	console.log("minus one to: "+ability.name)
+    	app.character.abilities[ability.name]--;
+    },
+
     createBlankCharacter: function (){
     	app.character = {
     		abilities:{}
