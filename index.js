@@ -138,7 +138,8 @@ var bodyParser = require('body-parser');
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static('client'))
+//app.use(express.static('client'))
+app.use(express.static('heromakerClient'))
 var port = process.env.PORT || 8080;        // set our port
 
 // ROUTES FOR OUR API
