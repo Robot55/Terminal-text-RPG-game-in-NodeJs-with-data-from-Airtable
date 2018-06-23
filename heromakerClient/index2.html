@@ -55,7 +55,7 @@
                     </div>
                     <div class="row">
                         <h4 class="w-100">Optional Proficiencies</h4>
-                        <div class="btn-group" role="group" aria-label="Basic example" v-for="proficiency in character.race.starting_proficiency_options.from">
+                        <div class="btn-group" role="group" aria-label="Basic example" v-for="proficiency in (character.race.starting_proficiency_options || {from:[]}).from">
                             <button type="button" class="btn btn-secondary ml-1 mr-1" v-on:click="">{{proficiency.name}}</button>
                         </div>
                     </div>
