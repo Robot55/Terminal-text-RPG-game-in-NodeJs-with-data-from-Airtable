@@ -28,7 +28,7 @@
             </div>
             <div class="row" id="app">
                 <div class="col-md-6">
-                    <div class="row" v-for="ability in abilities" v-on:click="selectAbility(ability)">
+                    <div class="row" v-for="ability in api.abilities" v-on:click="selectAbility(ability)">
                         <div class="col-md-4 col-sm-4 col-2">
                             <p>{{ability.name}}</p>
                         </div>
@@ -51,9 +51,9 @@
                     <div class="card"> 
                         <img class="card-img-top" src="http://pinegrow.com/placeholders/img12.jpg" alt="Card image cap"> 
                         <div class="card-body"> 
-                            <h4 class="card-title">{{selectedAbility.full_name}}</h4> 
-                            <h6 class="card-subtitle mb-2 text-muted">{{selectedAbility.name}}</h6> 
-                            <p class="card-text" v-for="descline in selectedAbility.desc">{{descline}}</p>
+                            <h4 class="card-title">{{ui.selectedAbility.full_name}}</h4> 
+                            <h6 class="card-subtitle mb-2 text-muted">{{ui.selectedAbility.name}}</h6> 
+                            <p class="card-text" v-for="descline in ui.selectedAbility.desc">{{descline}}</p>
                         </div>                         
                     </div>
                 </div>

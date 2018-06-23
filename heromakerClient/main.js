@@ -2,37 +2,29 @@
 var app = new Vue({
   el: '#app',
   data: {
-    abilities: [
-      {
-			"name": "loading...",
-			"url": "http://www.dnd5eapi.co/api/ability-scores/1"
-		}
-    ],
+	api: {
+	},
     character : {
-            abilities:{
-            	"STR": 0,
-            	"DEX": 0,
-            	"CON": 0,
-            	"INT": 0,
-            	"WIS": 0,
-            	"CHA": 0        }
+            abilities:{  }	
     },
-    selectedAbility: false
+	ui: {
+		selectedAbility: false
+	}
   },
   methods: {
     getAbilities: function () {
       	jQuery.getJSON( "http://www.dnd5eapi.co/api/ability-scores/", function( json ) {
-	  		app.abilities = json.results;
-
-	  		jQuery.each(app.abilities,function( i ) {	// for every ability in abilities, call me back with its index
-
-  				app.hydrateObject(app.abilities[i],function(hydratedObject){ // call hydtate with an ability and a callback for the hydrated object
-	  				app.abilities[i] = hydratedObject // <<-- Essentially THIS is the callback 
-	  				app.selectedAbility = app.abilities[i];
+	  		app.api.abilities = json.results;
+	  		jQuery.each(app.api.abilities,function( i ) {	// for every ability in abilities, call me back with its index
+  				app.hydrateObject(app.api.abilities[i],function(hydratedObject){ // call hydtate with an ability and a callback for the hydrated object
+	  				app.api.abilities[i] = hydratedObject // <<-- Essentially THIS is the callback 
+	  				app.ui.selectedAbility = app.api.abilities[i];
 
 	  			});
-
-	  			app.character.abilities[app.abilities[i].name] = d20.roll('3d6')
+				
+				// Adding a new reactive property (i.e one not defined in the client skeleton)
+				// add a new property to character.abilities, using ability's name and a default of 3d6;
+				app.$set(app.character.abilities, app.api.abilities[i].name, d20.roll('3d6'));
 
 			});
 
@@ -47,7 +39,7 @@ var app = new Vue({
     },
     selectAbility: function (ability){
     	console.log(ability)
-    	app.selectedAbility=ability
+    	app.ui.selectedAbility=ability
     },
 
     abilityRaise: function (ability){
