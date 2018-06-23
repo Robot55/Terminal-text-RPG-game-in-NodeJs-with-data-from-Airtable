@@ -13,14 +13,14 @@
         <link href="style.css" rel="stylesheet">
     </head>
     <body>
-        <div class="container">
+        <div class="container" id="app">
             <div class="row">
                 <h1 class="text-center text-sm-center text-lg-center text-xl-center w-100 d-lg-flex">Character Creator</h1>
             </div>
             <div class="row">
                 <h2 class="text-center text-sm-center text-lg-center text-xl-center">Gender</h2>
             </div>
-            <div class="row" id="app">
+            <div class="row">
                 <h2 class="w-100 text-lg-left text-sm-left text-left text-xl-left">Race</h2>
                 <div class="col-md-5 col-lg-5">
                     <div class="card">
@@ -76,7 +76,7 @@
             <div class="row">
                 <h2 class="text-center text-sm-center text-lg-center text-xl-center">Abilities</h2>
             </div>
-            <div class="row" id="app">
+            <div class="row">
                 <div class="col-md-6">
                     <div class="row" v-for="ability in api.abilities" v-on:click="selectAbility(ability)">
                         <div class="col-md-4 col-sm-4 col-2">
