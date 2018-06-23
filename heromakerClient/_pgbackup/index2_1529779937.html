@@ -26,10 +26,10 @@
                     <div class="card">
                         <div class="row">
                             <div class="col-md-6 col-lg-6">
-                                <button type="button" class="btn btn-secondary w-100" v-on:click="">&lt;</button>                                 
+                                <button type="button" class="btn btn-secondary w-100" v-on:click="abilityRaise(ability)">&lt;</button>                                 
                             </div>
                             <div class="col-md-6 col-lg-6">
-                                <button type="button" class="btn btn-secondary w-100" v-on:click="">&gt;</button>                                 
+                                <button type="button" class="btn btn-secondary w-100" v-on:click="abilityRaise(ability)">&gt;</button>                                 
                             </div>
                         </div>
                         <div class="container">
@@ -56,7 +56,7 @@
                     <div class="row">
                         <h4 class="w-100">Optional Proficiencies</h4>
                         <div class="btn-group" role="group" aria-label="Basic example" v-for="proficiency in character.race.starting_proficiency_options.from">
-                            <button type="button" class="btn btn-secondary ml-1 mr-1" v-on:click="">{{proficiency.name}}</button>
+                            <button type="button" class="btn btn-secondary ml-1 mr-1" v-on:click="abilityRaise(ability)">{{proficiency.name}}</button>
                         </div>
                     </div>
                     <div class="row">
@@ -68,7 +68,7 @@
                     <div class="row">
                         <h4 class="w-100">Ability Bonuses</h4>
                         <div class="row w-100">
-                            <p v-for="bonus in character.race.ability_bonuses" class="w-auto">{{bonus}},&nbsp</p>
+                            <p v-for="ability in character.race.ability_bonuses" class="w-auto">{{character.abilities[ability].name}}:&nbsp{{ability}},&nbsp</p>
                         </div>
                     </div>                     
                 </div>
@@ -96,6 +96,16 @@
                         </div>
                     </div>
                     <div class="row"></div>
+                </div>
+                <div class="col-md-6"> 
+                    <div class="card"> 
+                        <img class="card-img-top" src="http://pinegrow.com/placeholders/img12.jpg" alt="Card image cap"> 
+                        <div class="card-body"> 
+                            <h4 class="card-title">{{ui.selectedAbility.full_name}}</h4> 
+                            <h6 class="card-subtitle mb-2 text-muted">{{ui.selectedAbility.name}}</h6> 
+                            <p class="card-text" v-for="descline in ui.selectedAbility.desc">{{descline}}</p>
+                        </div>                         
+                    </div>
                 </div>
                 <div class="col-md-6"> 
                     <div class="card"> 
