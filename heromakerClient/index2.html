@@ -21,7 +21,53 @@
                 <h2 class="text-center text-sm-center text-lg-center text-xl-center">Gender</h2>
             </div>
             <div class="row">
-                <h2 class="text-center text-sm-center text-lg-center text-xl-center">Race</h2>
+                <h2 class="w-100 text-lg-left text-sm-left text-left text-xl-left">Race</h2>
+                <div class="col-md-5 col-lg-5">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-md-6 col-lg-6">
+                                <button type="button" class="btn btn-secondary w-100" v-on:click="abilityRaise(ability)">&lt;</button>                                 
+                            </div>
+                            <div class="col-md-6 col-lg-6">
+                                <button type="button" class="btn btn-secondary w-100" v-on:click="abilityRaise(ability)">&gt;</button>                                 
+                            </div>
+                        </div>
+                        <div class="container">
+                            <img class="card-img-top w-100" alt="Card image cap" style="width:100%;" src="http://pinegrow.com/placeholders/img16.jpg"/>
+                        </div>
+                        <div class="card-body">
+                            <h3>Dwarf</h3>
+                            <p class="card-text"><b>Speed</b>: 30 <b>Size</b>: Medium</p>
+                            <p class="card-text"><p>Most dwarves are lawful, believing firmly in the benefits of a well-ordered society. They tend toward good as well, with a strong sense of fair play and a belief that everyone deserves to share in the benefits of a just order. </p></p>
+                        </div>
+                    </div>                     
+                </div>
+                <div class="col-lg-7 col-md-7">
+                    <div class="row">
+                        <h4 class="w-100">Languages</h4>
+                        <p>You can speak, read, and write Common and Dwarvish. Dwarvish is full of hard consonants and guttural sounds, and those characteristics spill over into whatever other language a dwarf might speak.</p>
+                    </div>
+                    <div class="row">
+                        <h4 class="w-100">Starting Proficiencies</h4>
+                        <p>Battleaxes, Handaxes, Light hammers, Warhammers</p>
+                    </div>
+                    <div class="row">
+                        <h4 class="w-100">Optional Proficiencies</h4>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-secondary ml-1 mr-1" v-on:click="abilityRaise(ability)">Smith's tools</button>
+                            <button type="button" class="btn btn-secondary ml-1 mr-1" v-on:click="abilityLower(ability)">Brewer's supplies</button>
+                            <button type="button" class="btn btn-secondary ml-1 mr-1" v-on:click="abilityLower(ability)">Mason's tools</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h4 class="w-100">Traits</h4>
+                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    </div>
+                    <div class="row">
+                        <h4 class="w-100">Ability Bonuses</h4>
+                        <p>STR:+1  DEX:-1  CON:0  INT:-2  WIS:+1  CHA:0</p>
+                    </div>                     
+                </div>
             </div>
             <div class="row">
                 <h2 class="text-center text-sm-center text-lg-center text-xl-center">Abilities</h2>
