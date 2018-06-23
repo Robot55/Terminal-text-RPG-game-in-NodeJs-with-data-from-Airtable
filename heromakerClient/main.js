@@ -5,7 +5,8 @@ var app = new Vue({
 	api: {
 	},
     character : {
-            abilities:{  }	
+            abilities:{  },
+			class : {}
     },
 	ui: {
 		selectedAbility: false
@@ -32,6 +33,20 @@ var app = new Vue({
 
 		});
     },
+	getClasses : function () {
+		this.getBasicAPIEndpoint("classes");
+	},
+	getBasicAPIEndpoint : function(endpointName) {
+		jQuery.getJSON( "http://www.dnd5eapi.co/api/"+endpointName, function( json ) {
+			app.api[endpointName] = json.results;
+			jQuery.each(app.api[endpointName],function( i ) {	
+			app.hydrateObject(app.api[endpointName][i],function(hydratedObject){
+					app.api[endpointName][i] = hydratedObject 
+				});
+
+			});
+		});
+	},
     // I get an object and a callback.
     // I callback with the hydratedObject
     hydrateObject: function (object, callback) {
@@ -51,14 +66,16 @@ var app = new Vue({
     abilityLower: function (ability){
     	console.log("minus one to: "+ability.name)
     	app.character.abilities[ability.name]--;
-    }
-
-
-
+    },
+	setClass : function(charclass) {
+		character.charclass = charclass;
+	}
 
   }
+  
 })
 
-$( document ).ready(function() {
-    app.getAbilities ();
-});
+$(document).ready(function(){
+	app.getAbilities ();
+	app.getClasses ();
+})
