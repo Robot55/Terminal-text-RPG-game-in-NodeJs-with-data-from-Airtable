@@ -13,23 +13,23 @@
         <link href="style.css" rel="stylesheet">
     </head>
     <body>
-        <div class="container">
+        <div class="container" id="app">
             <div class="row">
                 <h1 class="text-center text-sm-center text-lg-center text-xl-center w-100 d-lg-flex">Character Creator</h1>
             </div>
             <div class="row">
                 <h2 class="text-center text-sm-center text-lg-center text-xl-center">Gender</h2>
             </div>
-            <div class="row" id="app">
+            <div class="row">
                 <h2 class="w-100 text-lg-left text-sm-left text-left text-xl-left">Race</h2>
                 <div class="col-md-5 col-lg-5">
                     <div class="card">
                         <div class="row">
                             <div class="col-md-6 col-lg-6">
-                                <button type="button" class="btn btn-secondary w-100" v-on:click="abilityRaise(ability)">&lt;</button>                                 
+                                <button type="button" class="btn btn-secondary w-100" v-on:click="">&lt;</button>                                 
                             </div>
                             <div class="col-md-6 col-lg-6">
-                                <button type="button" class="btn btn-secondary w-100" v-on:click="abilityRaise(ability)">&gt;</button>                                 
+                                <button type="button" class="btn btn-secondary w-100" v-on:click="selectNextRace(api.selectedRace)">&gt;</button>                                 
                             </div>
                         </div>
                         <div class="container">
@@ -56,7 +56,7 @@
                     <div class="row">
                         <h4 class="w-100">Optional Proficiencies</h4>
                         <div class="btn-group" role="group" aria-label="Basic example" v-for="proficiency in character.race.starting_proficiency_options.from">
-                            <button type="button" class="btn btn-secondary ml-1 mr-1" v-on:click="abilityRaise(ability)">{{proficiency.name}}</button>
+                            <button type="button" class="btn btn-secondary ml-1 mr-1" v-on:click="">{{proficiency.name}}</button>
                         </div>
                     </div>
                     <div class="row">
@@ -67,14 +67,16 @@
                     </div>
                     <div class="row">
                         <h4 class="w-100">Ability Bonuses</h4>
-                        <p>STR:+1  DEX:-1  CON:0  INT:-2  WIS:+1  CHA:0</p>
+                        <div class="row w-100">
+                            <p v-for="bonus in character.race.ability_bonuses" class="w-auto">{{bonus}},&nbsp</p>
+                        </div>
                     </div>                     
                 </div>
             </div>
             <div class="row">
                 <h2 class="text-center text-sm-center text-lg-center text-xl-center">Abilities</h2>
             </div>
-            <div class="row" id="app">
+            <div class="row">
                 <div class="col-md-6">
                     <div class="row" v-for="ability in api.abilities" v-on:click="selectAbility(ability)">
                         <div class="col-md-4 col-sm-4 col-2">
@@ -94,16 +96,6 @@
                         </div>
                     </div>
                     <div class="row"></div>
-                </div>
-                <div class="col-md-6"> 
-                    <div class="card"> 
-                        <img class="card-img-top" src="http://pinegrow.com/placeholders/img12.jpg" alt="Card image cap"> 
-                        <div class="card-body"> 
-                            <h4 class="card-title">{{ui.selectedAbility.full_name}}</h4> 
-                            <h6 class="card-subtitle mb-2 text-muted">{{ui.selectedAbility.name}}</h6> 
-                            <p class="card-text" v-for="descline in ui.selectedAbility.desc">{{descline}}</p>
-                        </div>                         
-                    </div>
                 </div>
                 <div class="col-md-6"> 
                     <div class="card"> 

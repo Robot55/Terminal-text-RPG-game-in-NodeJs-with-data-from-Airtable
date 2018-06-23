@@ -34,15 +34,19 @@ var app = new Vue({
 
 		});
     },
+    
     getRaces: function () {
         jQuery.getJSON( "http://www.dnd5eapi.co/api/races/", function( json ) {
         app.api.races = json.results;
         jQuery.each(app.api.races,function( i ) { // for every ability in abilities, call me back with its index
           app.hydrateObject(app.api.races[i],function(hydratedObject){ // call hydtate with an ability and a callback for the hydrated object
             app.api.races[i] = hydratedObject // <<-- Essentially THIS is the callback 
-            app.ui.selectedRace = app.api.races[i];
+            
             if (i == 0){
+
               console.log ("just this once: ", app.ui.selectedRace )
+              app.ui.selectedRace = app.api.races[i];
+              //setCharacterRace(app.ui.selectedRace);
               app.character.race = app.ui.selectedRace
               console.log("char race not set to: ", app.character.race)
             }
@@ -66,16 +70,22 @@ var app = new Vue({
     	jQuery.getJSON( object.url, callback);
     },
 
-
-      
-
-
-
+    setCharacterRace: function (race){
+      console.log(race)
+      app.character.race=race;
+    },
 
     selectAbility: function (ability){
     	console.log(ability)
     	app.ui.selectedAbility=ability
     },
+
+    selectNextRace: function (race){
+      console.log("plus one to: "+ race.name, race.index)
+      app.ui.selectedRace = app.api.races[race.index];
+      app.character.race = app.ui.selectedRace;
+      console.log("set to: "+ app.character.race.name, app.character.race.index)
+    },    
 
     abilityRaise: function (ability){
     	console.log("plus one to: "+ability.name)
