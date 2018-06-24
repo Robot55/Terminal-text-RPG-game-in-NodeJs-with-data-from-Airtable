@@ -5,8 +5,10 @@ var app = new Vue({
 	api: {
 	},
     character : {
-            abilities:{  },
-            race: "noRace" 	
+            abilities:{  }, 
+            race : {
+              name: "noRace"
+            }	
     },
 	ui: {
 		selectedAbility: false,
@@ -107,8 +109,10 @@ var app = new Vue({
     abilityLower: function (ability){
     	console.log("minus one to: "+ability.name)
     	app.character.abilities[ability.name]--;
+    },
+    getBonusName : function (bonus){
+      return app.api.abilities[bonus].name;
     }
-
 
 
 

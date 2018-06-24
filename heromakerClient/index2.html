@@ -25,10 +25,10 @@
                 <div class="col-md-5 col-lg-5">
                     <div class="card">
                         <div class="row">
-                            <div class="col-md-6 col-lg-6">
+                            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
                                 <button type="button" class="btn btn-secondary w-100" v-on:click="selectPrevRace(ui.selectedRace)">&lt;</button>                                 
                             </div>
-                            <div class="col-md-6 col-lg-6">
+                            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
                                 <button type="button" class="btn btn-secondary w-100" v-on:click="selectNextRace(ui.selectedRace)">&gt;</button>                                 
                             </div>
                         </div>
@@ -68,7 +68,9 @@
                     <div class="row">
                         <h4 class="w-100">Ability Bonuses</h4>
                         <div class="row w-100">
-                            <p v-for="bonus in character.race.ability_bonuses" class="w-auto">{{bonus}},&nbsp</p>
+                            <p v-for="bonus,i in character.race.ability_bonuses" class="w-auto">
+    {{getBonusName(i)}}: 
+    {{bonus}},&nbsp</p>
                         </div>
                     </div>                     
                 </div>
@@ -77,27 +79,27 @@
                 <h2 class="text-center text-sm-center text-lg-center text-xl-center">Abilities</h2>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 col-sm-9 col-6">
                     <div class="row" v-for="ability in api.abilities" v-on:click="selectAbility(ability)">
-                        <div class="col-md-4 col-sm-4 col-2">
+                        <div class="col-md-4 col-sm-3 col-3">
                             <p>{{ability.name}}</p>
                         </div>
-                        <div class="col-md-2 col-sm-3 col-3">
+                        <div class="col-md-2 col-sm-2 col-5">
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <button type="button" class="btn btn-secondary" v-on:click="abilityRaise(ability)">+</button>
                                 <button type="button" class="btn btn-secondary" v-on:click="abilityLower(ability)">-</button>
                             </div>
                         </div>
-                        <div class="col-3 col-lg-3 col-sm-3 col-md-3">
+                        <div class="col-lg-3 col-md-3 col-sm-2 col-2">
                             <p>{{character.abilities[ability.name]}}</p>
                         </div>
-                        <div class="col-md-2 col-sm-2 col-3">
+                        <div class="col-md-2 col-sm-2 col-2">
                             <p>18</p>
                         </div>
                     </div>
                     <div class="row"></div>
                 </div>
-                <div class="col-md-6"> 
+                <div class="col-md-6 col-sm-3 col-6"> 
                     <div class="card"> 
                         <img class="card-img-top" src="http://pinegrow.com/placeholders/img12.jpg" alt="Card image cap"> 
                         <div class="card-body"> 
