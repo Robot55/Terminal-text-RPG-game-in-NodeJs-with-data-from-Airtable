@@ -5,9 +5,12 @@ var app = new Vue({
 	api: {
 	},
     character : {
-            abilities:{  }, 
+            abilities:{  },
             race : {
-              name: "noRace"
+              name: "noRace",
+              ability_bonuses: {
+
+              }
             }	
     },
 	ui: {
@@ -16,21 +19,23 @@ var app = new Vue({
 	}
   },
   methods: {
-    getAbilities: function () {
-      	jQuery.getJSON( "http://www.dnd5eapi.co/api/ability-scores/", function( json ) {
+    getAbilities: function (callback) {
+      jQuery.getJSON( "http://www.dnd5eapi.co/api/ability-scores/", function( json ) {
 	  		app.api.abilities = json.results;
 	  		jQuery.each(app.api.abilities,function( i ) {	// for every ability in abilities, call me back with its index
   				app.hydrateObject(app.api.abilities[i],function(hydratedObject){ // call hydtate with an ability and a callback for the hydrated object
 	  				app.api.abilities[i] = hydratedObject // <<-- Essentially THIS is the callback 
 	  				app.ui.selectedAbility = app.api.abilities[i];
 
-	  			});
+	  			})
 				
 				// Adding a new reactive property (i.e one not defined in the client skeleton)
 				// add a new property to character.abilities, using ability's name and a default of 3d6;
 				app.$set(app.character.abilities, app.api.abilities[i].name, d20.roll('3d6'));
+         // this calls the callback NEXT FRAME so it don't block
 
 			});
+        setTimeout(callback,1);
 
 
 
@@ -42,6 +47,12 @@ var app = new Vue({
         app.api.races = json.results;
         jQuery.each(app.api.races,function( i ) { // for every ability in abilities, call me back with its index
           app.hydrateObject(app.api.races[i],function(hydratedObject){ // call hydtate with an ability and a callback for the hydrated object
+
+            var fixed = {};
+            for(var j in app.api.abilities) {
+              fixed[app.api.abilities[j].name] = hydratedObject.ability_bonuses[j]
+            }
+            hydratedObject.ability_bonuses = fixed;
             app.api.races[i] = hydratedObject // <<-- Essentially THIS is the callback 
             
             if (i == 0){
@@ -111,7 +122,10 @@ var app = new Vue({
     	app.character.abilities[ability.name]--;
     },
     getBonusName : function (bonus){
-      return app.api.abilities[bonus].name;
+      //if((app.api.abilities)[bonus]) {
+        return (app.api.abilities)[bonus].name
+      //}
+      //return "...";
     }
 
 
@@ -120,6 +134,7 @@ var app = new Vue({
 })
 
 $( document ).ready(function() {
-    app.getAbilities ();
-    app.getRaces ();
+    // get abilites AND THEN get races;
+    app.getAbilities (app.getRaces);
+    
 });
