@@ -44,7 +44,7 @@ var app = new Vue({
             
             if (i == 0){
 
-              console.log ("just this once: ", app.ui.selectedRace )
+              console.log ("Got first race from json: ", app.ui.selectedRace )
               app.ui.selectedRace = app.api.races[i];
               //setCharacterRace(app.ui.selectedRace);
               app.character.race = app.ui.selectedRace
@@ -81,8 +81,19 @@ var app = new Vue({
     },
 
     selectNextRace: function (race){
+      
       console.log("plus one to: "+ race.name, race.index)
-      app.ui.selectedRace = app.api.races[race.index];
+      console.log("race index: ", race.index, "api.races.length: ", app.api.races.length)
+      app.ui.selectedRace = race.index == app.api.races.length ? app.api.races[0] : app.api.races[race.index];
+      app.character.race = app.ui.selectedRace;
+      console.log("set to: "+ app.character.race.name, app.character.race.index)
+    },    
+
+    selectPrevRace: function (race){
+      
+      console.log("minus one to: "+ race.name, race.index)
+      console.log("race index: ", race.index, "api.races.length: ", app.api.races.length)
+      app.ui.selectedRace = race.index == 1 ? app.api.races[app.api.races.length-1] : app.api.races[race.index-2];
       app.character.race = app.ui.selectedRace;
       console.log("set to: "+ app.character.race.name, app.character.race.index)
     },    
